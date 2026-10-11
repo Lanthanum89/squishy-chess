@@ -14,7 +14,7 @@
   </head>
   <body>
     <h1>Squishy Chess diagnostics</h1>
-    <p>Screenshot this whole page and send it over.</p>
+    <p>Screenshot this whole page and the browser's install message. Service worker registration means offline support, not that the app is installed.</p>
     <pre id="out">Running...</pre>
     <script>
       const out = document.getElementById('out')
@@ -28,7 +28,11 @@
       const bad = (t) => log('FAIL ' + esc(t), 'bad')
       const info = (t) => log('     ' + esc(t))
 
-      window.addEventListener('beforeinstallprompt', () => ok('beforeinstallprompt fired (browser says: installable)'))
+      let installPromptSeen = false
+      window.addEventListener('beforeinstallprompt', () => {
+        installPromptSeen = true
+        ok('beforeinstallprompt fired (browser offers installation)')
+      })
       window.addEventListener('appinstalled', () => ok('appinstalled event fired'))
 
       ;(async () => {
@@ -37,17 +41,28 @@
         info('ua: ' + navigator.userAgent)
         ;(window.isSecureContext ? ok : bad)('secure context: ' + window.isSecureContext)
         info('display-mode standalone: ' + matchMedia('(display-mode: standalone)').matches)
+        info('iOS standalone: ' + (navigator.standalone === true))
+        info('Standalone mode describes this window, not all installations on the device.')
 
         let manifest
+        let appId
+        const manifestUrl = new URL('manifest.webmanifest', location.href)
+        const expectedScope = new URL('./', manifestUrl)
         try {
-          const r = await fetch('manifest.webmanifest', { cache: 'no-store' })
+          const r = await fetch(manifestUrl.href, { cache: 'no-store' })
           info('manifest: HTTP ' + r.status + ' ' + r.headers.get('content-type'))
+          if (!r.ok) throw new Error('HTTP ' + r.status)
           manifest = await r.json()
           ok('manifest parsed')
           for (const k of ['id', 'name', 'start_url', 'scope', 'display', 'orientation']) info('  ' + k + ': ' + manifest[k])
-          const base = new URL('manifest.webmanifest', location.href)
+          const base = manifestUrl
           const startUrl = new URL(manifest.start_url, base)
           const scope = new URL(manifest.scope, base)
+          const declaredId = new URL(manifest.id || startUrl.href, startUrl.origin + '/')
+          const resolvedId = declaredId.origin === startUrl.origin ? declaredId : new URL(startUrl.href)
+          resolvedId.hash = ''
+          appId = resolvedId.href
+          info('  resolved id: ' + appId)
           info('  resolved start_url: ' + startUrl.href)
           info('  resolved scope: ' + scope.href)
           ;(startUrl.href.startsWith(scope.href) ? ok : bad)('start_url is inside scope')
@@ -67,9 +82,18 @@
         else {
           try {
             const regs = await navigator.serviceWorker.getRegistrations()
-            if (!regs.length) bad('no service worker registrations (open the game page first, then come back)')
-            for (const r of regs) ok('SW scope ' + r.scope + ' active=' + !!r.active + ' waiting=' + !!r.waiting)
-            ;(navigator.serviceWorker.controller ? ok : info)('page controlled by SW: ' + !!navigator.serviceWorker.controller)
+            const ownRegs = regs.filter((r) => r.scope === expectedScope.href)
+            if (!ownRegs.length) bad('no Chess service worker registration at ' + expectedScope.href + ' (open the game page first, then come back)')
+            for (const r of regs) {
+              const own = r.scope === expectedScope.href
+              ;(own && r.active ? ok : info)((own ? 'Chess' : 'Other app') + ' SW scope ' + r.scope + ' active=' + !!r.active + ' waiting=' + !!r.waiting)
+              if (own && !r.active) info('Chess worker is not active yet; revisit after activation.')
+              if (r.active) info('  worker script: ' + r.active.scriptURL)
+            }
+            const controller = navigator.serviceWorker.controller
+            info('page controlled by SW: ' + !!controller)
+            if (controller) info('  controlling script: ' + controller.scriptURL)
+            info('Fetches below may pass through the controlling worker even with cache: no-store.')
             const sw = await fetch('sw.js', { cache: 'no-store' })
             ;(sw.ok ? ok : bad)('sw.js: HTTP ' + sw.status)
             info('caches: ' + (await caches.keys()).join(', '))
@@ -78,15 +102,30 @@
           }
         }
 
-        if (navigator.getInstalledRelatedApps) {
+        if (typeof navigator.getInstalledRelatedApps === 'function') {
           try {
-            info('installed related apps: ' + JSON.stringify(await navigator.getInstalledRelatedApps()))
+            const related = manifest && manifest.related_applications || []
+            const selfDeclared = related.some((app) => app.platform === 'webapp' &&
+              new URL(app.url, manifestUrl).href === manifestUrl.href &&
+              app.id && new URL(app.id, manifestUrl.origin + '/').href === appId)
+            if (!selfDeclared) info('Chess self-reference is missing from related_applications; installation lookup is inconclusive.')
+            const installed = await navigator.getInstalledRelatedApps()
+            info('installed related apps: ' + JSON.stringify(installed))
+            const chessInstalled = selfDeclared && installed.some((app) => app.platform === 'webapp' &&
+              ((app.url && new URL(app.url, manifestUrl).href === manifestUrl.href) ||
+                (app.id && new URL(app.id, manifestUrl.origin + '/').href === appId)))
+            if (chessInstalled) ok('browser reports Chess installed on this device')
+            else info('Chess was not reported by this API. This does not prove it is uninstalled in every browser.')
           } catch (e) {
             info('getInstalledRelatedApps: ' + e)
           }
-        }
-        info('--- done. Wait 5 seconds for beforeinstallprompt (Chrome only) ---')
+        } else info('Installed-related-apps API is unsupported; installation status is unknown.')
+        info('--- checks done ---')
+        setTimeout(() => {
+          if (!installPromptSeen) info('No beforeinstallprompt observed after 5 seconds. This alone does not mean already installed; browser support and installability also affect it.')
+        }, 5000)
       })()
     </script>
   </body>
 </html>
+

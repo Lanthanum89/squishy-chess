@@ -19,11 +19,15 @@ export default defineConfig({
         background_color: '#fff4f8',
         display: 'standalone',
         orientation: 'landscape',
-        // Explicit identity: GitHub Pages projects share one origin, and without an id Chrome
-        // derives it from start_url, which can collide with another installed app's scope
+        // Keep this identity stable: changing it can create a separate installed app.
+        // Relative ids resolve against the start_url origin, not the manifest directory.
         id: 'squishy-chess',
         start_url: './',
         scope: './',
+        related_applications: [
+          { platform: 'webapp', url: './manifest.webmanifest', id: 'squishy-chess' },
+        ],
+        prefer_related_applications: false,
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
@@ -34,3 +38,4 @@ export default defineConfig({
     }),
   ],
 })
+
