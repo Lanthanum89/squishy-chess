@@ -7,7 +7,7 @@ Pastel chess with squishy, blobby characters instead of pieces. Built as a table
 - Node 24 (see `.nvmrc`), TypeScript, React 19, Vite, Tailwind CSS 4
 - [chess.js](https://github.com/jhlywa/chess.js) for rules and move legality (no hand-rolled move generation)
 - `vite-plugin-pwa` for the manifest and service worker (offline, installable)
-- Sniglet font, self-hosted via Fontsource (Latin, weight 800 only, since all UI text is bold) so it works offline
+- Baloo 2 font, self-hosted via Fontsource (Latin subset, declared in `src/index.css`) so it works offline
 - pnpm, Oxlint
 
 ## Getting started
@@ -33,6 +33,7 @@ Built with a relative `base`, so it works from a GitHub Pages project subpath wi
 src/
   App.tsx                 layout, side panel, controls
   components/Board.tsx    tap-to-move board, highlights, promotion picker
+  components/WinCelebration.tsx  confetti and the You win card
   components/Piece.tsx    renders a piece image from src/assets/pieces
   ai.ts                   the computer opponent and difficulty levels
   hooks/useGame.ts        game state derived from a move list (undo = pop)
@@ -47,6 +48,7 @@ public/                   app icons (192, 512 and a padded maskable 512)
   - Choosing Blueberry makes the computer open, and the board is drawn with your pieces at the bottom.
   - Changing side or starting a new game resets the board, and asks first if a game is in progress.
   - Undo takes back your last move and the computer's reply. As Blueberry, the computer's opening move cannot be undone.
+- Winning by checkmate triggers a celebration (confetti, a bouncing king and a Play again card). It respects `prefers-reduced-motion`, and replaying the same mate after an Undo celebrates again.
 - Flip board only turns the view round. It does not change who plays which colour.
 - The computer is a small material-counting engine on top of chess.js, deliberately weak. Levels in `src/ai.ts`:
   - **Sleepy**: mostly random moves.
