@@ -19,6 +19,9 @@ export default defineConfig({
         background_color: '#fff4f8',
         display: 'standalone',
         orientation: 'landscape',
+        // Explicit identity: GitHub Pages projects share one origin, and without an id Chrome
+        // derives it from start_url, which can collide with another installed app's scope
+        id: 'squishy-chess',
         start_url: './',
         scope: './',
         icons: [
