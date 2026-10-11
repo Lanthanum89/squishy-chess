@@ -7,7 +7,7 @@ Pastel chess with squishy, blobby characters instead of pieces. Built as a table
 - Node 24 (see `.nvmrc`), TypeScript, React 19, Vite, Tailwind CSS 4
 - [chess.js](https://github.com/jhlywa/chess.js) for rules and move legality (no hand-rolled move generation)
 - `vite-plugin-pwa` for the manifest and service worker (offline, installable)
-- Fonts, self-hosted via Fontsource so they work offline: Chewy (title) and Baloo 2 (everything else, Latin subset only, declared in `src/index.css`)
+- Sniglet font, self-hosted via Fontsource (Latin, weight 800 only, since all UI text is bold) so it works offline
 - pnpm, Oxlint
 
 ## Getting started

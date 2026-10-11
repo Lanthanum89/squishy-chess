@@ -6,7 +6,6 @@ import Piece from './components/Piece'
 import { useGame } from './hooks/useGame'
 
 const NAMES = { w: 'Blush', b: 'Blueberry' } as const
-const COLOUR_WORDS = { w: 'pink', b: 'blue' } as const
 // Difficulty picker is planned for a later update
 const LEVEL: Level = 'easy'
 
@@ -26,7 +25,7 @@ function Button({
   return (
     <button
       type="button"
-      className={`rounded-2xl bg-blush px-4 py-4 text-lg font-bold shadow-sm active:scale-95 disabled:opacity-40 ${className}`}
+      className={`rounded-2xl bg-blush px-2 py-4 text-base font-bold shadow-sm active:scale-95 disabled:opacity-40 ${className}`}
       {...props}
     >
       {children}
@@ -85,7 +84,7 @@ export default function App() {
       </div>
 
       <aside className="flex w-full max-w-sm flex-col gap-3 landscape:w-72">
-        <h1 className="font-title text-4xl font-normal leading-none tracking-wide">Squishy Chess</h1>
+        <h1 className="text-3xl font-extrabold leading-tight">Squishy Chess</h1>
         <div className="rounded-3xl bg-white/70 p-4 text-xl font-bold shadow-sm" aria-live="polite">
           {statusText(game, player)}
         </div>
@@ -109,7 +108,7 @@ export default function App() {
                 <Piece type="k" color={side} className="h-14 w-14" />
                 {NAMES[side]}
                 <span className="text-xs font-semibold opacity-80">
-                  {COLOUR_WORDS[side]}, {side === 'w' ? 'moves first' : 'moves second'}
+                  {side === 'w' ? 'Moves first' : 'Moves second'}
                 </span>
               </button>
             ))}

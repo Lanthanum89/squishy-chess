@@ -8,10 +8,7 @@ importers:
 
   .:
     dependencies:
-      '@fontsource-variable/baloo-2':
-        specifier: ^5.3.0
-        version: 5.3.0
-      '@fontsource/chewy':
+      '@fontsource/sniglet':
         specifier: ^5.3.0
         version: 5.3.0
       chess.js:
@@ -567,11 +564,8 @@ packages:
     resolution: {integrity: sha512-Vj1jF3cPfxg7OAfoI7QnVKLoILlm2JF9pnVHrX8qx7AHMiYWT+NDAA7jChlNgRS4WTLc/fD1lXLmPixluj+3Gg==}
     engines: {node: '>=6.9.0'}
 
-  '@fontsource-variable/baloo-2@5.3.0':
-    resolution: {integrity: sha512-F7UfemLyAzp22LWRuy0IumnAPy/us+H5sxlDUsJ5a6LxinGf1BZaauL5kxBiLkvsfvoQWpY7DuUZ7GSdz+cR7g==}
-
-  '@fontsource/chewy@5.3.0':
-    resolution: {integrity: sha512-9p1c7sTqudOEP3RFbcI0h4r3Mq5+Atr6VBF70LGFegU0FAOt63asVt5ufBlojPF5+YFbSqq5iXjRdNt+k2l+2A==}
+  '@fontsource/sniglet@5.3.0':
+    resolution: {integrity: sha512-HTLIdOv503BhrUPOIb8WZfRRQkk2sl9FYV4pkYlCc5kpSJJ6omEeQ+24egbRLTWOOl4iI0FeeDoW/vu5KEP4vg==}
 
   '@isaacs/cliui@9.0.0':
     resolution: {integrity: sha512-AokJm4tuBHillT+FpMtxQ60n8ObyXBatq7jD2/JA9dxbDDokKQm8KMht5ibGzLVU9IJDIKK4TPKgMHEYMn3lMg==}
@@ -2897,9 +2891,7 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@fontsource-variable/baloo-2@5.3.0': {}
-
-  '@fontsource/chewy@5.3.0': {}
+  '@fontsource/sniglet@5.3.0': {}
 
   '@isaacs/cliui@9.0.0': {}
 
