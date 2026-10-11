@@ -24,7 +24,7 @@ The service worker only runs in production builds. To test install and offline b
 
 ## Hosting
 
-Built with a relative `base`, so it works from a GitHub Pages project subpath without config. Deploy with the workflow in `.github/workflows`.
+Built with a relative `base`, so it works from a GitHub Pages project subpath without config. Intended to be deployed with GitHub Actions.
 
 ## Structure
 

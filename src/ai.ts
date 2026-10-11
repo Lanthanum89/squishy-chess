@@ -32,7 +32,9 @@ function worstReplyScore(chess: Chess, side: Color): number {
   let worst = Infinity
   for (const san of replies) {
     chess.move(san)
-    worst = Math.min(worst, material(chess, side))
+    // Checkmate is a loss for us, any other finished game is level, otherwise count material
+    const score = chess.isCheckmate() ? -100 : chess.isGameOver() ? 0 : material(chess, side)
+    worst = Math.min(worst, score)
     chess.undo()
   }
   return worst
