@@ -65,7 +65,7 @@ export default function App() {
             <div className="text-sm font-semibold opacity-70">{NAMES[side]} has squished</div>
             <div className="flex flex-wrap">
               {game.captured[side].map((t, i) => (
-                <Piece key={i} type={t} color={side === 'w' ? 'b' : 'w'} className="h-9 w-9" />
+                <Piece key={i} type={t} color={side === 'w' ? 'b' : 'w'} className="h-10 w-10" />
               ))}
             </div>
           </div>
