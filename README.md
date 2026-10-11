@@ -29,6 +29,7 @@ src/
   App.tsx                 layout, side panel, controls
   components/Board.tsx    tap-to-move board, highlights, promotion picker
   components/Piece.tsx    inline SVG characters (one per piece type, two colourways)
+  ai.ts                   the computer opponent and difficulty levels
   hooks/useGame.ts        game state derived from a move list (undo = pop)
 public/                   icons (SVG source, 192 and 512 PNGs)
 ```
@@ -36,13 +37,17 @@ public/                   icons (SVG source, 192 and 512 PNGs)
 ## Design notes
 
 - Tap to select, tap a dot to move. No drag, which is unreliable on touch and fiddly for small hands.
-- Blush (white) moves first. Blueberry is black.
+- You play Blush (white) and move first. The computer plays Blueberry.
+- The computer is a small material-counting engine on top of chess.js, deliberately weak. Levels in `src/ai.ts`:
+  - **Sleepy**: mostly random moves.
+  - **Easy** (default): looks one move ahead, often misses things and sometimes plays a random move.
+  - **Tricky**: looks two moves ahead (spots simple traps and mates in one), with a few random slips.
+- Tune difficulty via `CONFIG` in `src/ai.ts` (`noise` and `blunder` are the dials). Stockfish was ruled out as far too strong and a large precache asset.
 - Characters are original SVG art, so recolouring or swapping a piece is a change to one component.
 - Game state is just the list of moves played. The position is rebuilt with chess.js on each change, which is cheap and makes undo trivial.
 
 ## Roadmap
 
-- [ ] Play against the computer (Stockfish WASM in a Web Worker)
 - [ ] Persist the game in `localStorage`
 - [ ] Sounds and haptics
 - [ ] Move animations between squares

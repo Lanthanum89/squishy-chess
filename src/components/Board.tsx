@@ -8,7 +8,15 @@ type Game = ReturnType<typeof useGame>
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 const PROMOTIONS: PieceSymbol[] = ['q', 'r', 'b', 'n']
 
-export default function Board({ game, flipped }: { game: Game; flipped: boolean }) {
+export default function Board({
+  game,
+  flipped,
+  locked,
+}: {
+  game: Game
+  flipped: boolean
+  locked: boolean
+}) {
   const [selected, setSelected] = useState<Square | null>(null)
   const [pendingPromo, setPendingPromo] = useState<{ from: Square; to: Square } | null>(null)
 
@@ -20,7 +28,7 @@ export default function Board({ game, flipped }: { game: Game; flipped: boolean 
   const rows = flipped ? [...game.board].reverse() : game.board
 
   function onSquare(sq: Square, pieceColor: Color | undefined) {
-    if (over || pendingPromo) return
+    if (over || locked || pendingPromo) return
     if (selected && targetSquares.has(sq)) {
       const move = targets.find((m) => m.to === sq)!
       if (move.promotion) {

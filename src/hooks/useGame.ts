@@ -45,6 +45,7 @@ export function useGame() {
 
   return {
     board: chess.board(),
+    fen: chess.fen(),
     turn: chess.turn(),
     status,
     lastMove,
@@ -53,7 +54,7 @@ export function useGame() {
     legalFrom,
     kingSquare,
     play: (m: MoveInput) => setMoves((prev) => [...prev, m]),
-    undo: () => setMoves((prev) => prev.slice(0, -1)),
+    undo: (count = 1) => setMoves((prev) => prev.slice(0, Math.max(0, prev.length - count))),
     reset: () => setMoves([]),
   }
 }
