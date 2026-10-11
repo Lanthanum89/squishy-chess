@@ -85,7 +85,7 @@ export default function App() {
       </div>
 
       <aside className="flex w-full max-w-sm flex-col gap-3 landscape:w-72">
-        <h1 className="text-3xl font-extrabold tracking-tight">Squishy Chess</h1>
+        <h1 className="font-title text-4xl font-normal leading-none tracking-wide">Squishy Chess</h1>
         <div className="rounded-3xl bg-white/70 p-4 text-xl font-bold shadow-sm" aria-live="polite">
           {statusText(game, player)}
         </div>
