@@ -1,22 +1,13 @@
 import { useEffect, useState } from 'react'
-import { LEVELS, pickMove, type Level } from './ai'
+import { pickMove, type Level } from './ai'
 import Board from './components/Board'
 import Piece from './components/Piece'
 import { useGame } from './hooks/useGame'
 
 const NAMES = { w: 'Blush', b: 'Blueberry' } as const
 const PLAYER = 'w'
-const LEVEL_KEY = 'squishy-chess:level'
-
-function loadLevel(): Level {
-  try {
-    const v = localStorage.getItem(LEVEL_KEY)
-    if (LEVELS.some((l) => l.id === v)) return v as Level
-  } catch {
-    // storage unavailable, fall back to the default
-  }
-  return 'easy'
-}
+// Difficulty picker is planned for a later update
+const LEVEL: Level = 'easy'
 
 function statusText(game: ReturnType<typeof useGame>) {
   const s = game.status
@@ -41,28 +32,18 @@ function Button({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonEle
 export default function App() {
   const game = useGame()
   const [flipped, setFlipped] = useState(false)
-  const [level, setLevel] = useState<Level>(loadLevel)
 
   const computerTurn = game.status.kind === 'playing' && game.turn !== PLAYER
 
   useEffect(() => {
     if (!computerTurn) return
     const id = setTimeout(() => {
-      const move = pickMove(game.fen, level)
+      const move = pickMove(game.fen, LEVEL)
       if (move) game.play(move)
     }, 700)
     return () => clearTimeout(id)
     // fen changes exactly when the position does; game.play only wraps a setState
-  }, [computerTurn, game.fen, level])
-
-  function chooseLevel(l: Level) {
-    setLevel(l)
-    try {
-      localStorage.setItem(LEVEL_KEY, l)
-    } catch {
-      // ignore
-    }
-  }
+  }, [computerTurn, game.fen])
 
   // Take back the computer's reply as well, so undo returns to the player's turn
   const undo = () => game.undo(game.turn === PLAYER ? 2 : 1)
@@ -89,21 +70,6 @@ export default function App() {
             </div>
           </div>
         ))}
-
-        <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Difficulty">
-          {LEVELS.map((l) => (
-            <button
-              key={l.id}
-              type="button"
-              role="radio"
-              aria-checked={level === l.id}
-              onClick={() => chooseLevel(l.id)}
-              className={`rounded-2xl px-2 py-3 text-base font-bold active:scale-95 ${level === l.id ? 'bg-blush-deep text-white' : 'bg-white/70'}`}
-            >
-              {l.label}
-            </button>
-          ))}
-        </div>
 
         <div className="grid grid-cols-3 gap-3">
           <Button onClick={undo} disabled={!game.canUndo}>Undo</Button>

@@ -5,6 +5,10 @@
   "type": "module",
   "description": "Pastel, squishy chess for tablets. A PWA.",
   "license": "MIT",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "vite --host",
     "build": "tsc -b && vite build",
