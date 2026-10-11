@@ -50,7 +50,7 @@ export function useGame() {
     status,
     lastMove,
     captured,
-    canUndo: moves.length > 0,
+    moveCount: moves.length,
     legalFrom,
     kingSquare,
     play: (m: MoveInput) => setMoves((prev) => [...prev, m]),
