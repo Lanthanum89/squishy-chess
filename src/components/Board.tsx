@@ -133,7 +133,7 @@ export default function Board({
                   <Piece
                     type={cell.type}
                     color={cell.color}
-                    className={`relative z-10 h-[88%] w-[88%] ${selected === sq ? 'piece-selected' : ''} ${justLanded ? 'piece-landed' : ''}`}
+                    className={`relative z-10 h-[94%] w-[94%] ${selected === sq ? 'piece-selected' : ''} ${justLanded ? 'piece-landed' : ''}`}
                   />
                 )}
                 {isTarget && (

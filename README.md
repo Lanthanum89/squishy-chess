@@ -32,10 +32,11 @@ Built with a relative `base`, so it works from a GitHub Pages project subpath wi
 src/
   App.tsx                 layout, side panel, controls
   components/Board.tsx    tap-to-move board, highlights, promotion picker
-  components/Piece.tsx    inline SVG characters (one per piece type, two colourways)
+  components/Piece.tsx    renders a piece image from src/assets/pieces
   ai.ts                   the computer opponent and difficulty levels
   hooks/useGame.ts        game state derived from a move list (undo = pop)
-public/                   icons (SVG source, 192 and 512 PNGs)
+assets/pieces/          12 transparent WebP pieces, named <colour><type> (e.g. wq = Blush queen)
+public/                   app icons (192, 512 and a padded maskable 512)
 ```
 
 ## Design notes
@@ -48,7 +49,7 @@ public/                   icons (SVG source, 192 and 512 PNGs)
   - **Tricky**: looks two moves ahead (spots simple traps and mates in one), with a few random slips.
 - The in-game difficulty toggle is deferred. The game is fixed to Easy via `LEVEL` in `src/App.tsx`.
 - Tune difficulty via `CONFIG` in `src/ai.ts` (`noise` and `blunder` are the dials). Stockfish was ruled out as far too strong and a large precache asset.
-- Characters are original SVG art, so recolouring or swapping a piece is a change to one component.
+- Pieces are raster art (WebP, 256x256, bottom-aligned). To swap a piece, replace its file in `src/assets/pieces` keeping the name and size. Piece heights are deliberately compressed (pawn ~74% of king) so faces stay readable on small squares.
 - Game state is just the list of moves played. The position is rebuilt with chess.js on each change, which is cheap and makes undo trivial.
 
 ## Roadmap
