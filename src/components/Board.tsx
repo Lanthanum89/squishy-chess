@@ -34,7 +34,10 @@ export default function Board({
   locked: boolean
 }) {
   const [stored, setStored] = useState<Ui>({ fen: game.fen, selected: null, promo: null })
-  // Interaction state belongs to one position: ignore it once undo, new game or a reply changes the FEN
+  // Interaction state belongs to one position. Reset it whenever the FEN changes (a move, Undo, a new
+  // game). Merely ignoring a mismatch is not enough: Undo returns to an earlier FEN and would revive
+  // a stale selection or promotion dialog.
+  if (stored.fen !== game.fen) setStored({ fen: game.fen, selected: null, promo: null })
   const { selected, promo } = stored.fen === game.fen ? stored : { selected: null, promo: null }
   const setUi = (patch: Partial<Omit<Ui, 'fen'>>) =>
     setStored({ fen: game.fen, selected, promo, ...patch })
@@ -57,6 +60,8 @@ export default function Board({
   const targets: Move[] = selected ? game.legalFrom(selected) : []
   const targetSquares = new Set(targets.map((m) => m.to))
   const checkedKing = game.status.kind === 'playing' && game.status.check ? game.kingSquare(game.turn) : null
+
+  const winningKing = game.status.kind === 'checkmate' ? game.kingSquare(game.status.winner) : null
 
   const rows = flipped ? [...game.board].reverse() : game.board
 
@@ -133,7 +138,7 @@ export default function Board({
                   <Piece
                     type={cell.type}
                     color={cell.color}
-                    className={`relative z-10 h-[94%] w-[94%] ${selected === sq ? 'piece-selected' : ''} ${justLanded ? 'piece-landed' : ''}`}
+                    className={`relative z-10 h-[94%] w-[94%] ${selected === sq ? 'piece-selected' : ''} ${justLanded ? 'piece-landed' : ''} ${winningKing === sq ? 'piece-win' : ''}`}
                   />
                 )}
                 {isTarget && (

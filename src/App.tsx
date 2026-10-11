@@ -3,6 +3,7 @@ import type { Color } from 'chess.js'
 import { pickMove, type Level } from './ai'
 import Board from './components/Board'
 import Piece from './components/Piece'
+import WinCelebration from './components/WinCelebration'
 import { useGame } from './hooks/useGame'
 
 const NAMES = { w: 'Blush', b: 'Blueberry' } as const
@@ -43,6 +44,15 @@ export default function App() {
   const computer: Color = player === 'w' ? 'b' : 'w'
   const computerTurn = game.status.kind === 'playing' && game.turn !== player
   const inProgress = game.status.kind === 'playing' && game.moveCount > 0
+  // Celebrate a player win. Closing it hides it until the game leaves checkmate (Undo, new game),
+  // so replaying the same mating move celebrates again.
+  const [winClosed, setWinClosed] = useState(false)
+  const inCheckmate = game.status.kind === 'checkmate'
+  const showWin = game.status.kind === 'checkmate' && game.status.winner === player && !winClosed
+
+  useEffect(() => {
+    if (!inCheckmate) setWinClosed(false)
+  }, [inCheckmate])
 
   useEffect(() => {
     if (!computerTurn) return
@@ -139,6 +149,16 @@ export default function App() {
           <Button onClick={newGame} className="col-span-2">New game</Button>
         </div>
       </aside>
+      {showWin && (
+        <WinCelebration
+          winner={player}
+          onPlayAgain={() => {
+            setManualFlip(false)
+            game.reset()
+          }}
+          onClose={() => setWinClosed(true)}
+        />
+      )}
     </main>
   )
 }
