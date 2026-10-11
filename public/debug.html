@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <title>Squishy Chess diagnostics</title>
+    <style>
+      body { font: 16px/1.45 system-ui, sans-serif; margin: 16px; background: #fff4f8; color: #3a2430; }
+      h1 { font-size: 20px; margin: 0 0 8px; }
+      pre { white-space: pre-wrap; word-break: break-word; background: #fff; padding: 12px; border-radius: 12px; font-size: 14px; }
+      .ok { color: #0a7a3d; } .bad { color: #b3261e; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <h1>Squishy Chess diagnostics</h1>
+    <p>Screenshot this whole page and send it over.</p>
+    <pre id="out">Running...</pre>
+    <script>
+      const out = document.getElementById('out')
+      const lines = []
+      const log = (t, cls) => {
+        lines.push(cls ? `<span class="${cls}">${t}</span>` : t)
+        out.innerHTML = lines.join('\n')
+      }
+      const esc = (s) => String(s).replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' })[c])
+      const ok = (t) => log('OK   ' + esc(t), 'ok')
+      const bad = (t) => log('FAIL ' + esc(t), 'bad')
+      const info = (t) => log('     ' + esc(t))
+
+      window.addEventListener('beforeinstallprompt', () => ok('beforeinstallprompt fired (browser says: installable)'))
+      window.addEventListener('appinstalled', () => ok('appinstalled event fired'))
+
+      ;(async () => {
+        info('time: ' + new Date().toISOString())
+        info('url: ' + location.href)
+        info('ua: ' + navigator.userAgent)
+        ;(window.isSecureContext ? ok : bad)('secure context: ' + window.isSecureContext)
+        info('display-mode standalone: ' + matchMedia('(display-mode: standalone)').matches)
+
+        let manifest
+        try {
+          const r = await fetch('manifest.webmanifest', { cache: 'no-store' })
+          info('manifest: HTTP ' + r.status + ' ' + r.headers.get('content-type'))
+          manifest = await r.json()
+          ok('manifest parsed')
+          for (const k of ['id', 'name', 'start_url', 'scope', 'display', 'orientation']) info('  ' + k + ': ' + manifest[k])
+          const base = new URL('manifest.webmanifest', location.href)
+          const startUrl = new URL(manifest.start_url, base)
+          const scope = new URL(manifest.scope, base)
+          info('  resolved start_url: ' + startUrl.href)
+          info('  resolved scope: ' + scope.href)
+          ;(startUrl.href.startsWith(scope.href) ? ok : bad)('start_url is inside scope')
+          for (const i of manifest.icons || []) {
+            const u = new URL(i.src, base).href
+            const res = await fetch(u, { cache: 'no-store' })
+            const blob = await res.blob()
+            const bmp = await createImageBitmap(blob).catch(() => null)
+            const size = bmp ? bmp.width + 'x' + bmp.height : 'unreadable'
+            ;(res.ok && bmp ? ok : bad)('icon ' + i.src + ' (' + (i.purpose || 'any') + '): HTTP ' + res.status + ', ' + size + ', declared ' + i.sizes)
+          }
+        } catch (e) {
+          bad('manifest failed: ' + e)
+        }
+
+        if (!('serviceWorker' in navigator)) bad('no serviceWorker support')
+        else {
+          try {
+            const regs = await navigator.serviceWorker.getRegistrations()
+            if (!regs.length) bad('no service worker registrations (open the game page first, then come back)')
+            for (const r of regs) ok('SW scope ' + r.scope + ' active=' + !!r.active + ' waiting=' + !!r.waiting)
+            ;(navigator.serviceWorker.controller ? ok : info)('page controlled by SW: ' + !!navigator.serviceWorker.controller)
+            const sw = await fetch('sw.js', { cache: 'no-store' })
+            ;(sw.ok ? ok : bad)('sw.js: HTTP ' + sw.status)
+            info('caches: ' + (await caches.keys()).join(', '))
+          } catch (e) {
+            bad('service worker check failed: ' + e)
+          }
+        }
+
+        if (navigator.getInstalledRelatedApps) {
+          try {
+            info('installed related apps: ' + JSON.stringify(await navigator.getInstalledRelatedApps()))
+          } catch (e) {
+            info('getInstalledRelatedApps: ' + e)
+          }
+        }
+        info('--- done. Wait 5 seconds for beforeinstallprompt (Chrome only) ---')
+      })()
+    </script>
+  </body>
+</html>
