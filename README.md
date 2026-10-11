@@ -36,14 +36,18 @@ src/
   components/Piece.tsx    renders a piece image from src/assets/pieces
   ai.ts                   the computer opponent and difficulty levels
   hooks/useGame.ts        game state derived from a move list (undo = pop)
-assets/pieces/          12 transparent WebP pieces, named <colour><type> (e.g. wq = Blush queen)
+  assets/pieces/          12 transparent WebP pieces, named <colour><type> (e.g. wq = Blush queen)
 public/                   app icons (192, 512 and a padded maskable 512)
 ```
 
 ## Design notes
 
 - Tap to select, tap a dot to move. No drag, which is unreliable on touch and fiddly for small hands.
-- You play Blush (white) and move first. The computer plays Blueberry.
+- You choose to play as Blush (pink, white pieces, moves first) or Blueberry (blue, black pieces, moves second). The computer takes the other side.
+  - Choosing Blueberry makes the computer open, and the board is drawn with your pieces at the bottom.
+  - Changing side or starting a new game resets the board, and asks first if a game is in progress.
+  - Undo takes back your last move and the computer's reply. As Blueberry, the computer's opening move cannot be undone.
+- Flip board only turns the view round. It does not change who plays which colour.
 - The computer is a small material-counting engine on top of chess.js, deliberately weak. Levels in `src/ai.ts`:
   - **Sleepy**: mostly random moves.
   - **Easy** (default): looks one move ahead, often misses things and sometimes plays a random move.

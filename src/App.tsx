@@ -90,34 +90,37 @@ export default function App() {
         </div>
 
         <div className="rounded-3xl bg-white/50 p-3">
-          <div className="mb-2 text-sm font-semibold opacity-70" id="play-as-label">
+          <div className="mb-2 text-sm font-semibold opacity-90" id="play-as-label">
             You are playing as
           </div>
           <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="play-as-label">
             {(['w', 'b'] as const).map((side) => (
-              <button
+              <label
                 key={side}
-                type="button"
-                role="radio"
-                aria-checked={player === side}
-                onClick={() => chooseSide(side)}
-                className={`flex flex-col items-center rounded-2xl px-1 py-2 text-base font-bold active:scale-95 ${
-                  player === side ? 'bg-blush-deep text-white shadow-sm' : 'bg-white/70'
-                }`}
+                className="flex cursor-pointer flex-col items-center rounded-2xl bg-white/70 px-1 py-2 text-base font-bold active:scale-95 has-checked:bg-blush-deep has-checked:shadow-sm has-focus-visible:ring-4 has-focus-visible:ring-ink/50"
               >
+                {/* Native radios: arrow keys and a single tab stop come from the browser */}
+                <input
+                  type="radio"
+                  name="play-as"
+                  value={side}
+                  checked={player === side}
+                  onChange={() => chooseSide(side)}
+                  className="sr-only"
+                />
                 <Piece type="k" color={side} className="h-14 w-14" />
                 {NAMES[side]}
-                <span className="text-xs font-semibold opacity-80">
+                <span className="text-xs font-semibold">
                   {side === 'w' ? 'Moves first' : 'Moves second'}
                 </span>
-              </button>
+              </label>
             ))}
           </div>
         </div>
 
         {([player, computer] as const).map((side) => (
           <div key={side} className="min-h-16 rounded-3xl bg-white/50 p-3">
-            <div className="text-sm font-semibold opacity-70">
+            <div className="text-sm font-semibold opacity-90">
               {side === player ? 'You' : 'Computer'} ({NAMES[side]}) squished
             </div>
             <div className="flex flex-wrap">
