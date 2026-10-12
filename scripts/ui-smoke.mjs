@@ -162,7 +162,6 @@ try {
   // Rejected requests should explain how to rotate, rather than silently pretend success.
   await evaluate("Object.defineProperty(screen.orientation,'lock',{configurable:true,value:async()=>{throw new Error('not supported')}}); document.querySelector('.screen-options input[value=portrait]').click()")
   await waitFor("document.querySelector('.screen-help').textContent.includes('couldn’t rotate')")
-  assert.match(await evaluate("document.querySelector('.rotation-details').textContent"), /not supported/)
   // Use a trusted tap to exercise the real fullscreen requirement and retry button.
   await evaluate("Object.defineProperty(screen.orientation,'lock',{configurable:true,value:async(type)=>{rotationRequests.push(type); if(type!=='any' && !document.fullscreenElement) throw new DOMException('Fullscreen required','SecurityError')}}); document.querySelector('.rotation-retry').scrollIntoView({block:'center'})")
   const retryRect = await evaluate("(()=>{const r=document.querySelector('.rotation-retry').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()")

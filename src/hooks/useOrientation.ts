@@ -80,5 +80,5 @@ export function useOrientation() {
     document.documentElement.dataset.layout = landscape && preference !== 'portrait' ? 'landscape' : 'portrait'
   }, [landscape, preference])
   const blocked = request?.preference === preference && !request.allowed && preference !== 'auto'
-  return [preference, setPreference, blocked, request?.preference === preference ? request.error : undefined] as const
+  return [preference, setPreference, blocked] as const
 }
