@@ -27,6 +27,12 @@
   --font-display: 'Baloo 2 Variable', ui-rounded, 'Trebuchet MS', system-ui, sans-serif;
 }
 
+:root {
+  --page-1: #ffe9f3;
+  --page-2: #f3e8ff;
+  --page-3: #e3f7ef;
+}
+
 /* Dark theme: the same tokens, redefined. useTheme sets data-theme on <html>. */
 :root[data-theme='dark'] {
   color-scheme: dark;
@@ -44,12 +50,6 @@
   --page-1: #2a1d45;
   --page-2: #1d1530;
   --page-3: #142628;
-}
-
-:root {
-  --page-1: #ffe9f3;
-  --page-2: #f3e8ff;
-  --page-3: #e3f7ef;
 }
 
 html,

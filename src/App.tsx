@@ -68,8 +68,9 @@ export default function App() {
       if (move) game.play(move)
     }, 700)
     return () => clearTimeout(id)
-    // fen changes exactly when the position does; game.play only wraps a setState
-  }, [computerTurn, game.fen])
+    // fen changes exactly when the position does; game.play only wraps a setState.
+    // level re-arms a pending move, so a difficulty change applies to the very next reply.
+  }, [computerTurn, game.fen, level])
 
   // Take back the computer's reply as well, so undo returns to the player's turn.
   // As Blueberry the computer's opening move is not undoable, or it would just replay it.
