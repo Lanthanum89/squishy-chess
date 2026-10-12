@@ -144,7 +144,15 @@ export default function App() {
           </div>
         </div>
 
-        <section className="capture-tray rounded-3xl bg-panel px-4 py-3" aria-label="Captured pieces">
+        <div className="game-actions grid grid-cols-2 gap-3">
+          <Button onClick={undo} disabled={!canUndo}>Undo</Button>
+          <Button onClick={() => setManualFlip((f) => !f)} aria-pressed={manualFlip}>
+            Flip board
+          </Button>
+          <Button primary onClick={newGame} className="col-span-2">New game</Button>
+        </div>
+
+        {(game.captured.w.length > 0 || game.captured.b.length > 0) && <section className="capture-tray rounded-3xl bg-panel px-4 py-3" aria-label="Captured pieces">
           {(['w', 'b'] as const).map((side) => (
             <div key={side}>
               <div className="text-sm font-extrabold text-ink-soft">{NAMES[side]} squished</div>
@@ -158,9 +166,9 @@ export default function App() {
               </div>
             </div>
           ))}
-        </section>
+        </section>}
 
-        <details className="move-history rounded-3xl bg-panel px-4 py-3" open>
+        <details className="move-history rounded-3xl bg-panel px-4 py-3" open={game.history.length > 0}>
           <summary className="cursor-pointer font-display text-lg font-semibold">Move history</summary>
           {game.history.length === 0 ? <p className="mt-2 text-sm text-ink-soft">Your first move starts the story.</p> : (
             <div className="history-scroll mt-2 max-h-40 overflow-y-auto" tabIndex={0} aria-label="Scrollable move history">
@@ -181,13 +189,7 @@ export default function App() {
           )}
         </details>
 
-        <div className="game-actions grid grid-cols-2 gap-3">
-          <Button onClick={undo} disabled={!canUndo}>Undo</Button>
-          <Button onClick={() => setManualFlip((f) => !f)} aria-pressed={manualFlip}>
-            Flip board
-          </Button>
-          <Button primary onClick={newGame} className="col-span-2">New game</Button>
-        </div>
+
 
         {/* Keep game setup together and out of the way during play. */}
         <details className="game-settings group rounded-3xl bg-panel px-4 py-3">

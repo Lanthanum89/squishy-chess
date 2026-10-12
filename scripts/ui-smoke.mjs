@@ -6,7 +6,7 @@ import { join } from 'node:path'
 
 const profile = await mkdtemp(join(tmpdir(), 'squishy-chess-'))
 const server = spawn('pnpm', ['exec', 'vite', 'preview', '--host', '127.0.0.1', '--port', '4173', '--strictPort'], { stdio: 'inherit' })
-const chrome = spawn(process.env.CHROME_BIN || 'google-chrome', ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--remote-debugging-port=9222', `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' })
+const chrome = spawn(process.env.CHROME_BIN || 'google-chrome', ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--remote-debugging-port=9222', `--user-data-dir=${profile}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'inherit'] })
 let socket
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 async function available(url, options) {

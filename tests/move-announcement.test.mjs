@@ -3,7 +3,7 @@ import test from 'node:test'
 import { Chess } from 'chess.js'
 import { describeMove } from '../src/moveAnnouncement.ts'
 
-test('announcements name both sides, squares, check and capture information', () => {
+test('announcements name both sides, squares and captures', () => {
   const chess = new Chess()
   assert.equal(describeMove(chess.move('e4')), 'Blush pawn from e2 to e4.')
   chess.move('d5')
