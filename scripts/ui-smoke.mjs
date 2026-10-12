@@ -57,6 +57,17 @@ try {
   const clickSquare = (label) => evaluate(`document.querySelector('.board-square[data-square="${label.slice(0,2)}"]').click()`)
   await call('Page.enable')
   await call('Runtime.enable')
+  // Model the installed app's rotation API and observe real service-worker update checks.
+  await call('Page.addScriptToEvaluateOnNewDocument', { source: `
+    window.rotationRequests = [];
+    Object.defineProperty(screen.orientation, 'lock', {configurable:true, value:async(type)=>{window.rotationRequests.push(type)}});
+    window.workerUpdateChecks = 0;
+    window.workerUpdatesPending = 0;
+    if (typeof ServiceWorkerRegistration !== 'undefined') {
+      const original = ServiceWorkerRegistration.prototype.update;
+      ServiceWorkerRegistration.prototype.update = function() {window.workerUpdateChecks++; window.workerUpdatesPending++; return original.call(this).finally(()=>{window.workerUpdatesPending--})};
+    }
+  ` })
   await call('Page.navigate', { url: 'http://127.0.0.1:4173' })
   await waitFor("document.querySelectorAll('.board-square').length === 64")
   await waitFor("[...document.querySelectorAll('img')].every(img => img.complete && img.naturalWidth > 0)")
@@ -120,6 +131,22 @@ try {
   await call('Page.reload')
   await waitFor("document.documentElement.dataset.layout === 'landscape' && document.querySelectorAll('.board-square').length === 64")
   assert.equal(await evaluate("getComputedStyle(document.querySelector('.play-screen')).flexDirection"), 'row')
+  assert(await evaluate("rotationRequests.length > 0 && rotationRequests.every(type=>type==='any')"), 'Installed app must allow any orientation, not force landscape or portrait')
+  await waitFor("workerUpdateChecks > 0 && workerUpdatesPending === 0")
+  const rotationCalls = await evaluate('rotationRequests.length')
+  const updateCalls = await evaluate('workerUpdateChecks')
+  await evaluate("Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'}); document.dispatchEvent(new Event('visibilitychange'))")
+  assert.equal(await evaluate('rotationRequests.length'), rotationCalls)
+  await evaluate("Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'}); document.dispatchEvent(new Event('visibilitychange'))")
+  await waitFor(`rotationRequests.length > ${rotationCalls} && workerUpdateChecks > ${updateCalls}`)
+  assert(await evaluate("rotationRequests.every(type=>type==='any')"))
+  await evaluate("delete document.visibilityState")
+  // Portrait rotation must still stack the layout after resuming an installed app.
+  await call('Emulation.setDeviceMetricsOverride', {width:390,height:844,deviceScaleFactor:1,mobile:true,screenOrientation:{type:'portraitPrimary',angle:0}})
+  await waitFor("document.documentElement.dataset.layout === 'portrait'")
+  assert.equal(await evaluate("getComputedStyle(document.querySelector('.play-screen')).flexDirection"), 'column')
+  await call('Emulation.setDeviceMetricsOverride', {width:667,height:375,deviceScaleFactor:1,mobile:true,screenOrientation:{type:'landscapePrimary',angle:90}})
+  await waitFor("document.documentElement.dataset.layout === 'landscape'")
   // Pass-and-play: both sides are human, history and mode survive reload, Undo takes one ply.
   await evaluate("document.querySelector('.game-settings').open=true; document.querySelector('input[value=pass-play]').click()")
   await waitFor("JSON.parse(localStorage.getItem('squishy-game-v1')).mode === 'pass-play'")
