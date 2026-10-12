@@ -54,14 +54,14 @@ public/                   app icons (192, 512 and a padded maskable 512)
   - **Sleepy**: mostly random moves.
   - **Easy** (default): looks one move ahead, often misses things and sometimes plays a random move.
   - **Tricky**: looks two moves ahead (spots simple traps and mates in one), with a few random slips.
-- The in-game difficulty toggle is deferred. The game is fixed to Easy via `LEVEL` in `src/App.tsx`.
+- Choose Sleepy, Easy, or Tricky in the controls. Difficulty changes apply to the next computer turn.
 - Tune difficulty via `CONFIG` in `src/ai.ts` (`noise` and `blunder` are the dials). Stockfish was ruled out as far too strong and a large precache asset.
 - Pieces are raster art (WebP, 256x256, bottom-aligned). To swap a piece, replace its file in `src/assets/pieces` keeping the name and size. Piece heights are deliberately compressed (pawn ~74% of king) so faces stay readable on small squares.
 - Game state is just the list of moves played. The position is rebuilt with chess.js on each change, which is cheap and makes undo trivial.
 
 ## Roadmap
 
-- [ ] Difficulty toggle (engine levels already exist in `src/ai.ts`)
+- [x] Difficulty picker (Sleepy, Easy, Tricky)
 - [ ] Persist the game in `localStorage`
 - [ ] Sounds and haptics
 - [ ] Move animations between squares
@@ -71,3 +71,7 @@ public/                   app icons (192, 512 and a padded maskable 512)
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
+
+## Interface
+
+The responsive interface keeps the board prominent, labels board coordinates, and separates turn status from the game controls. Side changes and new games use a keyboard-accessible confirmation dialog during play. The supplied WebP characters, app icons, self-hosted Baloo font, and win celebration are retained.

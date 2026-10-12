@@ -105,10 +105,10 @@ export default function Board({
   }
 
   return (
-    <div className="relative aspect-square w-full rounded-[2.2rem] bg-white/60 p-[1.6%] shadow-[0_12px_40px_-10px_rgba(224,112,159,0.45)]">
+    <div className="board-frame">
       <div
         inert={promoOpen}
-        className="grid h-full w-full grid-cols-8 grid-rows-8 overflow-hidden rounded-[1.6rem]"
+        className="board-grid"
       >
         {rows.flatMap((row, r) => {
           const cells = flipped ? [...row].reverse() : row
@@ -129,21 +129,23 @@ export default function Board({
                 type="button"
                 aria-label={label}
                 onClick={(e) => onSquare(sq, cell?.color, e.currentTarget)}
-                className={`relative flex items-center justify-center p-0 ${dark ? 'bg-lilac-deep/70' : 'bg-cream'}`}
+                className={`board-square ${dark ? 'dark' : 'light'}`}
               >
-                {isLast && <span className="absolute inset-0 bg-yellow-200/60" />}
-                {selected === sq && <span className="absolute inset-0 bg-blush-deep/50" />}
-                {checkedKing === sq && <span className="absolute inset-0 bg-red-300/70" />}
+                {c === 0 && <span className="square-coordinate rank" aria-hidden="true">{rank}</span>}
+                {r === 7 && <span className="square-coordinate file" aria-hidden="true">{FILES[file]}</span>}
+                {isLast && <span className="last-move" />}
+                {selected === sq && <span className="selected-square" />}
+                {checkedKing === sq && <span className="checked-square" />}
                 {cell && (
                   <Piece
                     type={cell.type}
                     color={cell.color}
-                    className={`relative z-10 h-[94%] w-[94%] ${selected === sq ? 'piece-selected' : ''} ${justLanded ? 'piece-landed' : ''} ${winningKing === sq ? 'piece-win' : ''}`}
+                    className={`${selected === sq ? 'piece-selected' : ''} ${justLanded ? 'piece-landed' : ''} ${winningKing === sq ? 'piece-win' : ''}`}
                   />
                 )}
                 {isTarget && (
                   <span
-                    className={`absolute z-20 rounded-full ${cell ? 'inset-[6%] border-[5px] border-blush-deep/80' : 'h-[28%] w-[28%] bg-blush-deep/70'}`}
+                    className={cell ? 'capture-target' : 'move-target'}
                   />
                 )}
               </button>
@@ -153,30 +155,35 @@ export default function Board({
       </div>
 
       {promo && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center rounded-[2.2rem] bg-white/70 backdrop-blur-sm">
+        <div className="promotion-overlay">
           <div
             ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label="Choose a piece to promote to"
             onKeyDown={onDialogKeyDown}
-            className="flex gap-3 rounded-3xl bg-cream p-4 shadow-xl"
+            className="promotion-dialog"
           >
+            <p>Pick your new friend</p>
+            <div className="promotion-choices">
             {PROMOTIONS.map((p, i) => (
               <button
                 key={p}
                 ref={i === 0 ? firstChoiceRef : undefined}
                 type="button"
                 onClick={() => choosePromotion(p)}
-                className="h-24 w-24 rounded-2xl bg-blush active:scale-95"
+                
                 aria-label={`Promote to ${PIECE_NAMES[p]}`}
               >
-                <Piece type={p} color={game.turn} className="h-full w-full" />
+                <Piece type={p} color={game.turn} />
+                <span>{PIECE_NAMES[p]}</span>
               </button>
             ))}
+            </div>
           </div>
         </div>
       )}
     </div>
   )
 }
+
