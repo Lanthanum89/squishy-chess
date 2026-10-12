@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#ffd6e8" />
+    <meta name="theme-color" content="#ffdbe8" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <link rel="icon" type="image/png" href="icon-192.png" />
     <link rel="apple-touch-icon" href="icon-192.png" />
@@ -14,7 +14,7 @@
         try { t = localStorage.getItem('squishy-theme') } catch (e) {}
         var dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.dataset.theme = dark ? 'dark' : 'light'
-        if (dark) document.querySelector('meta[name="theme-color"]').content = '#241a3a'
+        if (dark) document.querySelector('meta[name="theme-color"]').content = '#1b1330'
         var o = null
         try { o = localStorage.getItem('squishy-orientation') } catch (e) {}
         var wide = o !== 'portrait' && matchMedia('(orientation: landscape)').matches

@@ -105,7 +105,7 @@ export default function Board({
   }
 
   return (
-    <div className="relative aspect-square w-full rounded-[2.2rem] bg-panel/60 p-[1.6%] shadow-[0_12px_40px_-10px_rgba(224,112,159,0.45)]">
+    <div className="relative aspect-square w-full rounded-[2.2rem] bg-panel p-[1.6%] shadow-[0_18px_50px_-14px_var(--board-shadow)]">
       <div
         inert={promoOpen}
         className="grid h-full w-full grid-cols-8 grid-rows-8 overflow-hidden rounded-[1.6rem]"
@@ -131,8 +131,18 @@ export default function Board({
                 onClick={(e) => onSquare(sq, cell?.color, e.currentTarget)}
                 className={`relative flex items-center justify-center p-0 ${dark ? 'bg-square-dark' : 'bg-square-light'}`}
               >
-                {isLast && <span className="absolute inset-0 bg-lastmove/60" />}
-                {selected === sq && <span className="absolute inset-0 bg-blush-deep/50" />}
+                {c === 0 && (
+                  <span aria-hidden="true" className={`pointer-events-none absolute left-[7%] ${r === 0 ? 'top-[16%]' : 'top-[5%]'} z-20 text-xs font-extrabold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
+                    {rank}
+                  </span>
+                )}
+                {r === 7 && (
+                  <span aria-hidden="true" className={`pointer-events-none absolute bottom-[5%] ${c === 7 ? 'right-[16%]' : 'right-[7%]'} z-20 text-xs font-extrabold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
+                    {FILES[file]}
+                  </span>
+                )}
+                {isLast && <span className="absolute inset-0 bg-lastmove/55" />}
+                {selected === sq && <span className="absolute inset-0 bg-berry/30" />}
                 {checkedKing === sq && <span className="absolute inset-0 bg-red-300/70" />}
                 {cell && (
                   <Piece
@@ -143,7 +153,7 @@ export default function Board({
                 )}
                 {isTarget && (
                   <span
-                    className={`absolute z-20 rounded-full ${cell ? 'inset-[6%] border-[5px] border-blush-deep/80' : 'h-[28%] w-[28%] bg-blush-deep/70'}`}
+                    className={`absolute z-20 rounded-full ${cell ? 'inset-[6%] border-[5px] border-berry/85' : 'h-[28%] w-[28%] bg-berry/75'}`}
                   />
                 )}
               </button>
@@ -168,7 +178,7 @@ export default function Board({
                 ref={i === 0 ? firstChoiceRef : undefined}
                 type="button"
                 onClick={() => choosePromotion(p)}
-                className="h-24 w-24 rounded-2xl bg-blush active:scale-95"
+                className="h-24 w-24 rounded-2xl bg-lilac shadow-[0_5px_0_var(--color-lilac-edge)] active:translate-y-[3px] active:shadow-[0_2px_0_var(--color-lilac-edge)]"
                 aria-label={`Promote to ${PIECE_NAMES[p]}`}
               >
                 <Piece type={p} color={game.turn} className="h-full w-full" />
