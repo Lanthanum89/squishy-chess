@@ -105,7 +105,7 @@ export default function Board({
   }
 
   return (
-    <div className="relative aspect-square w-full rounded-[2.2rem] bg-white/60 p-[1.6%] shadow-[0_12px_40px_-10px_rgba(224,112,159,0.45)]">
+    <div className="relative aspect-square w-full rounded-[2.2rem] bg-panel/60 p-[1.6%] shadow-[0_12px_40px_-10px_rgba(224,112,159,0.45)]">
       <div
         inert={promoOpen}
         className="grid h-full w-full grid-cols-8 grid-rows-8 overflow-hidden rounded-[1.6rem]"
@@ -129,9 +129,9 @@ export default function Board({
                 type="button"
                 aria-label={label}
                 onClick={(e) => onSquare(sq, cell?.color, e.currentTarget)}
-                className={`relative flex items-center justify-center p-0 ${dark ? 'bg-lilac-deep/70' : 'bg-cream'}`}
+                className={`relative flex items-center justify-center p-0 ${dark ? 'bg-square-dark' : 'bg-square-light'}`}
               >
-                {isLast && <span className="absolute inset-0 bg-yellow-200/60" />}
+                {isLast && <span className="absolute inset-0 bg-lastmove/60" />}
                 {selected === sq && <span className="absolute inset-0 bg-blush-deep/50" />}
                 {checkedKing === sq && <span className="absolute inset-0 bg-red-300/70" />}
                 {cell && (
@@ -153,7 +153,7 @@ export default function Board({
       </div>
 
       {promo && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center rounded-[2.2rem] bg-white/70 backdrop-blur-sm">
+        <div className="absolute inset-0 z-30 flex items-center justify-center rounded-[2.2rem] bg-panel/70 backdrop-blur-sm">
           <div
             ref={dialogRef}
             role="dialog"

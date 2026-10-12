@@ -1,6 +1,6 @@
 # Squishy Chess
 
-Pastel chess with squishy, blobby characters instead of pieces. Built as a tablet-first PWA, best in landscape.
+Pastel chess with squishy, blobby characters instead of pieces. Built as a tablet-first PWA. Works in landscape and portrait.
 
 ## Stack
 
@@ -9,6 +9,12 @@ Pastel chess with squishy, blobby characters instead of pieces. Built as a table
 - `vite-plugin-pwa` for the manifest and service worker (offline, installable)
 - Baloo 2 font, self-hosted via Fontsource (Latin subset, declared in `src/index.css`) so it works offline
 - pnpm, Oxlint
+
+## Features
+
+- Play as Blush or Blueberry against the computer, with Sleepy, Easy and Tricky difficulty (Settings, saved on the device)
+- Auto, Light and Dark themes (Auto follows the device)
+- Install app button in the header, shown only when the browser offers installation. It calls the browser's install prompt directly, because Chrome's menu can wrongly say "already installed" when several apps share one github.io origin
 
 ## Getting started
 
