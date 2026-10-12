@@ -9,7 +9,7 @@ import Segmented from './components/Segmented'
 import WinCelebration from './components/WinCelebration'
 import { useGame } from './hooks/useGame'
 import { useInstall } from './hooks/useInstall'
-import { useOrientation } from './hooks/useOrientation'
+import { ORIENTATIONS, useOrientation } from './hooks/useOrientation'
 import { useStored } from './hooks/useStored'
 import { THEMES, useTheme } from './hooks/useTheme'
 
@@ -49,7 +49,7 @@ export default function App() {
   // Applies from the computer's next move, so it is safe to change mid-game
   const [level, setLevel] = useStored<Level>('squishy-level', 'easy', LEVEL_IDS)
   const [theme, setTheme] = useTheme()
-  useOrientation()
+  const [orientation, setOrientation, rotationBlocked] = useOrientation()
   const { canInstall, install } = useInstall()
 
   // The player always starts at the bottom; Flip board turns the view round from there
@@ -243,6 +243,14 @@ export default function App() {
               </>
             )}
             <Segmented label="Theme" options={THEMES} value={theme} onChange={setTheme} />
+            <div className="screen-options">
+              <Segmented label="Screen" options={ORIENTATIONS} value={orientation} onChange={setOrientation} />
+            </div>
+            <p className="screen-help text-sm text-ink-soft" role="status">
+              {rotationBlocked
+                ? `Your browser couldn’t rotate the screen. Turn your device to ${orientation}.`
+                : orientation === 'auto' ? 'Auto follows your device’s rotation setting.' : `Keep the screen in ${orientation}.`}
+            </p>
             {canInstall && <Button onClick={install}>Install app</Button>}
           </div>
         </details>

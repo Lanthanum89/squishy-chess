@@ -14,6 +14,7 @@ Pastel chess with squishy, blobby characters instead of pieces. Built as a table
 
 - Play as Blush or Blueberry against the computer, with Sleepy, Easy and Tricky difficulty (Play options, saved on the device)
 - Auto, Light and Dark themes (Auto follows the device)
+- Auto / Portrait / Landscape screen choices in Play options, saved on this device. Auto follows device rotation; explicit choices request a screen lock where supported.
 - Pass-and-play with a friend on the same device; Undo takes back one move
 - Move history with Blush/Blueberry columns, standard chess notation and full move descriptions for assistive technology
 - Keyboard navigation: one Tab stop on the board, arrow keys to move, Enter/Space to play, Escape to clear selection
@@ -83,4 +84,4 @@ MIT. See [LICENSE](LICENSE).
 
 Games and the chosen computer/pass-and-play mode save automatically on this device after moves, undo, and new-game actions. Existing saves migrate to computer mode without losing moves. Restoring replays the move history so captures, castling, repetition, and undo remain correct. Invalid or unavailable storage falls back to a playable new game. Play options contain opponent, difficulty, side, theme, and installation; the promotion picker uses fluid columns with visible piece names.
 
-Layout follows the window and responds to phone rotation without forcing portrait or landscape or applying legacy orientation preferences. On launch and resume the app requests `any` orientation to override a landscape default retained by an older Android installation. It also checks for service-worker updates when returning to the app or reconnecting. On short landscape screens the board stays visible while the control column scrolls separately. The playful gradients, rounded panels, and tactile buttons are retained.
+In Auto, layout follows the window and the app requests `any` orientation on launch and resume to override a landscape default retained by an older Android installation. Portrait and Landscape request the selected screen orientation. Portrait also stacks the layout; if a browser cannot rotate into Landscape, the board stays usable until you turn the device. New choices persist in `squishy-screen-mode`; older `squishy-orientation` values are ignored so stale settings do not unexpectedly lock the app. It also checks for service-worker updates when returning to the app or reconnecting. On short landscape screens the board stays visible while the control column scrolls separately. The playful gradients, rounded panels, and tactile buttons are retained.
