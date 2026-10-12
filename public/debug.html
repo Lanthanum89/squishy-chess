@@ -15,6 +15,9 @@
   <body>
     <h1>Squishy Chess diagnostics</h1>
     <p>Screenshot this whole page and the browser's install message. Service worker registration means offline support, not that the app is installed.</p>
+    <p>Chrome's Android menu can mistake another app on this domain for Chess. This test uses the browser's PWA prompt directly when it is available.</p>
+    <button id="install" type="button" disabled>Waiting for an install prompt…</button>
+    <p id="install-status" role="status">Open the game first, then return here. If no prompt becomes available, send the diagnostic output below.</p>
     <pre id="out">Running...</pre>
     <script>
       const out = document.getElementById('out')
@@ -29,11 +32,42 @@
       const info = (t) => log('     ' + esc(t))
 
       let installPromptSeen = false
-      window.addEventListener('beforeinstallprompt', () => {
+      let pendingInstall
+      const installButton = document.getElementById('install')
+      const installStatus = document.getElementById('install-status')
+      window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault()
+        pendingInstall = event
         installPromptSeen = true
+        installButton.disabled = false
+        installButton.textContent = 'Try installing Squishy Chess'
+        installStatus.textContent = 'Chrome offers a direct PWA prompt. Tap the button to test it without the install menu.'
         ok('beforeinstallprompt fired (browser offers installation)')
       })
-      window.addEventListener('appinstalled', () => ok('appinstalled event fired'))
+      installButton.addEventListener('click', async () => {
+        if (!pendingInstall) return
+        const prompt = pendingInstall
+        pendingInstall = null
+        installButton.disabled = true
+        try {
+          await prompt.prompt()
+          const choice = await prompt.userChoice
+          info('direct install prompt outcome: ' + choice.outcome)
+          installStatus.textContent = choice.outcome === 'accepted'
+            ? 'Installation was accepted. Wait for completion, then open Chess from your app list. Acceptance alone does not confirm that installation finished.'
+            : 'The prompt was dismissed. Reload this page before trying again.'
+        } catch (error) {
+          bad('direct install prompt failed: ' + error)
+          installStatus.textContent = 'Chrome could not show the direct prompt. Send the diagnostic output below.'
+        }
+        installButton.textContent = 'Reload to test again'
+      })
+      window.addEventListener('appinstalled', () => {
+        ok('appinstalled event fired')
+        installButton.disabled = true
+        installButton.textContent = 'Installation reported by Chrome'
+        installStatus.textContent = 'Chrome reported installation. Check whether Chess opens from your app list.'
+      })
 
       ;(async () => {
         info('time: ' + new Date().toISOString())
