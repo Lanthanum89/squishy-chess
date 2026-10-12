@@ -149,11 +149,12 @@ try {
   await waitFor("document.documentElement.dataset.layout === 'landscape'")
   // Explicit screen choices persist, request native rotation, and update the layout.
   await evaluate("document.querySelector('.game-settings').open=true; document.querySelector('.screen-options input[value=portrait]').click()")
-  await waitFor("document.documentElement.dataset.layout === 'portrait' && rotationRequests.at(-1)==='portrait'")
-  assert.equal(await evaluate("getComputedStyle(document.querySelector('.play-screen')).flexDirection"), 'column')
+  await waitFor("rotationRequests.at(-1)==='portrait'")
+  // Layout follows the real window, so an unrotated landscape window never gets a stacked layout.
+  assert.equal(await evaluate("document.documentElement.dataset.layout"), 'landscape')
   await call('Page.reload')
   await waitFor("document.querySelector('.screen-options input[value=portrait]')?.checked && rotationRequests.at(-1)==='portrait'")
-  assert.equal(await evaluate("document.documentElement.dataset.layout"), 'portrait')
+  assert.equal(await evaluate("document.documentElement.dataset.layout"), 'landscape')
   await evaluate("document.querySelector('.game-settings').open=true; document.querySelector('.screen-options input[value=landscape]').click()")
   await waitFor("document.documentElement.dataset.layout === 'landscape' && rotationRequests.at(-1)==='landscape'")
   await call('Emulation.setDeviceMetricsOverride', {width:390,height:844,deviceScaleFactor:1,mobile:true,screenOrientation:{type:'portraitPrimary',angle:0}})

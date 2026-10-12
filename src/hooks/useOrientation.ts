@@ -75,10 +75,10 @@ export function useOrientation() {
     return () => query.removeEventListener('change', update)
   }, [])
   useEffect(() => {
-    // Portrait can also stack the controls in browsers that cannot lock the screen.
-    // Never squeeze a landscape board beside a sidebar in a narrow portrait window.
-    document.documentElement.dataset.layout = landscape && preference !== 'portrait' ? 'landscape' : 'portrait'
-  }, [landscape, preference])
+    // The layout always follows the real window. A Portrait choice that the browser cannot
+    // lock must not stack a tall layout into a short landscape window.
+    document.documentElement.dataset.layout = landscape ? 'landscape' : 'portrait'
+  }, [landscape])
   const blocked = request?.preference === preference && !request.allowed && preference !== 'auto'
   return [preference, setPreference, blocked] as const
 }
