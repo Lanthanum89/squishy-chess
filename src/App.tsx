@@ -49,7 +49,7 @@ export default function App() {
   // Applies from the computer's next move, so it is safe to change mid-game
   const [level, setLevel] = useStored<Level>('squishy-level', 'easy', LEVEL_IDS)
   const [theme, setTheme] = useTheme()
-  const [orientation, setOrientation, rotationBlocked] = useOrientation()
+  const [orientation, setOrientation, rotationBlocked, rotationError] = useOrientation()
   const { canInstall, install } = useInstall()
 
   // The player always starts at the bottom; Flip board turns the view round from there
@@ -249,8 +249,17 @@ export default function App() {
             <p className="screen-help text-sm text-ink-soft" role="status">
               {rotationBlocked
                 ? `Your browser couldn’t rotate the screen. Turn your device to ${orientation}.`
-                : orientation === 'auto' ? 'Auto follows your device’s rotation setting.' : `Keep the screen in ${orientation}.`}
+                : orientation === 'auto' ? 'Auto follows your device’s rotation setting. Fixed orientation may use fullscreen.' : `Keep the screen in ${orientation}.`}
             </p>
+            {rotationBlocked && (
+              <>
+                <Button className="rotation-retry" onClick={() => setOrientation(orientation)}>Try rotating again</Button>
+                <details className="rotation-details text-sm text-ink-soft">
+                  <summary className="cursor-pointer">Rotation details</summary>
+                  <pre className="mt-2 whitespace-pre-wrap break-words font-body">{rotationError}</pre>
+                </details>
+              </>
+            )}
             {canInstall && <Button onClick={install}>Install app</Button>}
           </div>
         </details>
