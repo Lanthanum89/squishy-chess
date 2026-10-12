@@ -15,8 +15,8 @@ export default defineConfig({
         name: 'Squishy Chess',
         short_name: 'Squishy',
         description: 'Pastel, squishy chess for tablets.',
-        theme_color: '#ffd6e8',
-        background_color: '#fff4f8',
+        theme_color: '#ffdbe8',
+        background_color: '#fff1f6',
         display: 'standalone',
         orientation: 'any',
         // Keep this identity stable: changing it can create a separate installed app.

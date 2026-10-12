@@ -15,7 +15,7 @@ export default function Segmented<T extends string>({
   const labelId = `${name}-label`
   return (
     <div>
-      <div className="mb-2 text-sm font-semibold opacity-90" id={labelId}>
+      <div className="mb-2 text-sm font-extrabold text-ink-soft" id={labelId}>
         {label}
       </div>
       <div
@@ -27,7 +27,7 @@ export default function Segmented<T extends string>({
         {options.map((o) => (
           <label
             key={o.id}
-            className="flex cursor-pointer items-center justify-center rounded-2xl bg-panel/70 px-1 py-3 text-base font-bold active:scale-95 has-checked:bg-blush-deep has-checked:shadow-sm has-focus-visible:ring-4 has-focus-visible:ring-ink/50"
+            className="flex cursor-pointer items-center justify-center min-h-12 rounded-2xl bg-cream px-1 py-3 font-display text-base font-semibold ring-3 ring-transparent active:scale-95 has-checked:bg-sel has-checked:ring-berry has-focus-visible:outline-4 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink"
           >
             {/* Native radios: arrow keys and a single tab stop come from the browser */}
             <input

@@ -1,12 +1,23 @@
 @import 'tailwindcss';
 
-/* Latin subset only: the package's own CSS pulls in every script, which bloats the offline cache */
+/* Latin subset only: the packages' own CSS pulls in every script, which bloats the offline cache */
 @font-face {
-  font-family: 'Baloo 2 Variable';
+  font-family: 'Fredoka Variable';
   font-style: normal;
   font-display: swap;
-  font-weight: 400 800;
-  src: url('../node_modules/@fontsource-variable/baloo-2/files/baloo-2-latin-wght-normal.woff2')
+  font-weight: 300 700;
+  src: url('../node_modules/@fontsource-variable/fredoka/files/fredoka-latin-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Nunito Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 1000;
+  src: url('../node_modules/@fontsource-variable/nunito/files/nunito-latin-wght-normal.woff2')
     format('woff2-variations');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
     U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -16,43 +27,58 @@
 @custom-variant wide (&:where([data-layout='landscape'] *));
 
 @theme {
-  --color-cream: #fff4f8;
-  --color-blush: #ffd6e8;
-  --color-blush-deep: #ff9ec7;
-  --color-lilac: #e6d9ff;
-  --color-lilac-deep: #c9b3ff;
-  --color-mint: #cff5e4;
-  --color-ink: #5b3a4a;
+  --color-cream: #fff1f6;
+  --color-blush: #ffdbe8;
+  --color-lilac: #e9dcff;
+  --color-lilac-edge: #c9b4f2;
+  --color-sel: #ffe3ef;
+  --color-berry: #cf2c71;
+  --color-berry-edge: #9f1d55;
+  --color-on-berry: #ffffff;
+  --color-ink: #3a2340;
+  --color-ink-soft: #6d5473;
   --color-panel: #ffffff;
-  --color-square-light: #fff4f8;
-  --color-square-dark: #d5c5fb;
-  --color-lastmove: #fef08a;
-  --font-display: 'Baloo 2 Variable', ui-rounded, 'Trebuchet MS', system-ui, sans-serif;
+  --color-square-light: #fff4e6;
+  --color-square-dark: #cdbcf7;
+  --color-coord-light: #6d52b8;
+  --color-coord-dark: #3d2a78;
+  --color-lastmove: #ffd666;
+  --font-display: 'Fredoka Variable', ui-rounded, 'Trebuchet MS', system-ui, sans-serif;
+  --font-body: 'Nunito Variable', ui-rounded, system-ui, sans-serif;
 }
 
 :root {
-  --page-1: #ffe9f3;
-  --page-2: #f3e8ff;
-  --page-3: #e3f7ef;
+  --page-1: #fff1f6;
+  --page-2: #f4ecff;
+  --page-3: #e7f8f0;
+  --piece-shadow: rgba(58, 35, 64, 0.28);
+  --board-shadow: rgba(160, 60, 120, 0.4);
 }
 
 /* Dark theme: the same tokens, redefined. useTheme sets data-theme on <html>. */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-cream: #2d2243;
-  --color-blush: #6b3f63;
-  --color-blush-deep: #9c4a7c;
-  --color-lilac: #43386a;
-  --color-lilac-deep: #7a64b8;
-  --color-mint: #1f4a40;
-  --color-ink: #f6e9f1;
-  --color-panel: #3a2d52;
-  --color-square-light: #5d4d82;
-  --color-square-dark: #3d3160;
+  --color-cream: #2f2448;
+  --color-blush: #5a3560;
+  --color-lilac: #443770;
+  --color-lilac-edge: #2e2352;
+  --color-sel: #4b2d5c;
+  --color-berry: #ff7eb0;
+  --color-berry-edge: #c24a7d;
+  --color-on-berry: #3a1230;
+  --color-ink: #f8edf5;
+  --color-ink-soft: #cdb9d6;
+  --color-panel: #2f2448;
+  --color-square-light: #6f5f9c;
+  --color-square-dark: #4a3d78;
+  --color-coord-light: #f3eaff;
+  --color-coord-dark: #d8c8ff;
   --color-lastmove: #d9b84a;
-  --page-1: #2a1d45;
-  --page-2: #1d1530;
-  --page-3: #142628;
+  --page-1: #2b1f45;
+  --page-2: #1b1330;
+  --page-3: #12202a;
+  --piece-shadow: rgba(0, 0, 0, 0.4);
+  --board-shadow: rgba(0, 0, 0, 0.6);
 }
 
 html,
@@ -70,14 +96,41 @@ body {
   background: radial-gradient(circle at 20% 10%, var(--page-1) 0%, var(--page-2) 60%, var(--page-3) 100%);
   background-attachment: fixed;
   color: var(--color-ink);
-  font-family: var(--font-display);
-  font-weight: 500;
+  font-family: var(--font-body);
+  font-weight: 600;
   overscroll-behavior: none;
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Chunky candy buttons: a solid bottom edge that squashes on press */
+.btn {
+  --btn-edge: var(--color-lilac-edge);
+  min-height: 3.5rem;
+  padding: 0 1rem;
+  border-radius: 1.25rem;
+  background: var(--color-lilac);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.15;
+  box-shadow: 0 5px 0 var(--btn-edge);
+  transition: transform 80ms ease-out, box-shadow 80ms ease-out;
+}
+.btn-primary {
+  --btn-edge: var(--color-berry-edge);
+  background: var(--color-berry);
+  color: var(--color-on-berry);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--btn-edge);
+}
+.btn:disabled { opacity: 0.4; }
+.btn:focus-visible { outline: 4px solid var(--color-ink); outline-offset: 3px; }
 
 @keyframes wobble {
   0%, 100% { transform: scale(1, 1); }

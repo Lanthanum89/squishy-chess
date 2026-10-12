@@ -9,7 +9,7 @@ export const THEMES: { id: ThemePref; label: string }[] = [
   { id: 'dark', label: 'Dark' },
 ]
 
-const THEME_COLOURS = { light: '#ffd6e8', dark: '#241a3a' }
+const THEME_COLOURS = { light: '#ffdbe8', dark: '#1b1330' }
 const DARK_QUERY = '(prefers-color-scheme: dark)'
 
 // The same resolution runs inline in index.html before first paint, to avoid a light flash

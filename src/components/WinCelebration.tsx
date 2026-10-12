@@ -110,23 +110,23 @@ export default function WinCelebration({
           className="win-card flex w-full max-w-sm flex-col items-center gap-3 rounded-[2rem] bg-cream p-6 text-center shadow-2xl"
         >
           <Piece type="k" color={winner} className="win-bounce h-36 w-36" />
-          <h2 id="win-title" className="text-4xl font-extrabold leading-tight">
+          <h2 id="win-title" className="font-display text-4xl font-semibold leading-tight">
             You win!
           </h2>
-          <p className="text-lg font-semibold">Checkmate. Well played!</p>
+          <p className="text-lg font-bold text-ink-soft">Checkmate. Well played!</p>
           <div className="mt-2 grid w-full grid-cols-2 gap-3">
             <button
               ref={playAgainRef}
               type="button"
               onClick={onPlayAgain}
-              className="rounded-2xl bg-blush-deep px-3 py-4 text-lg font-bold active:scale-95"
+              className="btn btn-primary"
             >
               Play again
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="rounded-2xl bg-blush px-3 py-4 text-lg font-bold active:scale-95"
+              className="btn"
             >
               See the board
             </button>
