@@ -8,13 +8,17 @@
     <link rel="icon" type="image/png" href="icon-192.png" />
     <link rel="apple-touch-icon" href="icon-192.png" />
     <script>
-      // Resolve the saved theme before first paint so dark mode does not flash light
+      // Resolve the saved theme and layout before first paint so neither flashes the wrong way
       ;(function () {
         var t = null
         try { t = localStorage.getItem('squishy-theme') } catch (e) {}
         var dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.dataset.theme = dark ? 'dark' : 'light'
         if (dark) document.querySelector('meta[name="theme-color"]').content = '#241a3a'
+        var o = null
+        try { o = localStorage.getItem('squishy-orientation') } catch (e) {}
+        var wide = o !== 'portrait' && matchMedia('(orientation: landscape)').matches
+        document.documentElement.dataset.layout = wide ? 'landscape' : 'portrait'
       })()
     </script>
     <title>Squishy Chess</title>

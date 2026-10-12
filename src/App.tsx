@@ -7,6 +7,7 @@ import Segmented from './components/Segmented'
 import WinCelebration from './components/WinCelebration'
 import { useGame } from './hooks/useGame'
 import { useInstall } from './hooks/useInstall'
+import { ORIENTATIONS, useOrientation } from './hooks/useOrientation'
 import { useStored } from './hooks/useStored'
 import { THEMES, useTheme } from './hooks/useTheme'
 
@@ -44,6 +45,7 @@ export default function App() {
   // Applies from the computer's next move, so it is safe to change mid-game
   const [level, setLevel] = useStored<Level>('squishy-level', 'easy', LEVEL_IDS)
   const [theme, setTheme] = useTheme()
+  const [orientation, setOrientation] = useOrientation()
   const { canInstall, install } = useInstall()
 
   // The player always starts at the bottom; Flip board turns the view round from there
@@ -96,12 +98,12 @@ export default function App() {
   }
 
   return (
-    <main className="flex min-h-full flex-col items-center justify-center gap-4 p-4 landscape:flex-row landscape:gap-6">
-      <div className="w-[min(100%,62dvh)] landscape:w-[min(calc(100dvw-22rem),calc(100dvh-2rem))] landscape:shrink-0">
+    <main className="flex min-h-full flex-col items-center justify-center gap-4 p-4 wide:flex-row wide:gap-6">
+      <div className="w-[min(100%,62dvh)] wide:w-[min(calc(100dvw-22rem),calc(100dvh-2rem))] wide:shrink-0">
         <Board game={game} flipped={flipped} locked={computerTurn} />
       </div>
 
-      <aside className="flex w-full max-w-sm flex-col gap-3 landscape:w-72">
+      <aside className="flex w-full max-w-sm flex-col gap-3 wide:w-72">
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-3xl font-extrabold leading-tight">Squishy Chess</h1>
           {canInstall && (
@@ -179,6 +181,7 @@ export default function App() {
           <div className="mt-3 flex flex-col gap-3">
             <Segmented label="Computer difficulty" options={LEVELS} value={level} onChange={setLevel} />
             <Segmented label="Theme" options={THEMES} value={theme} onChange={setTheme} />
+            <Segmented label="Screen" options={ORIENTATIONS} value={orientation} onChange={setOrientation} />
           </div>
         </details>
       </aside>
