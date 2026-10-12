@@ -118,7 +118,7 @@ try {
   // Old screen preferences must not force a portrait layout after an upgrade.
   await evaluate("localStorage.setItem('squishy-orientation','portrait')")
   await call('Page.reload')
-  await waitFor("document.documentElement.dataset.layout === 'landscape'")
+  await waitFor("document.documentElement.dataset.layout === 'landscape' && document.querySelectorAll('.board-square').length === 64")
   assert.equal(await evaluate("getComputedStyle(document.querySelector('.play-screen')).flexDirection"), 'row')
   // Pass-and-play: both sides are human, history and mode survive reload, Undo takes one ply.
   await evaluate("document.querySelector('.game-settings').open=true; document.querySelector('input[value=pass-play]').click()")

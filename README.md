@@ -12,9 +12,12 @@ Pastel chess with squishy, blobby characters instead of pieces. Built as a table
 
 ## Features
 
-- Play as Blush or Blueberry against the computer, with Sleepy, Easy and Tricky difficulty (Settings, saved on the device)
+- Play as Blush or Blueberry against the computer, with Sleepy, Easy and Tricky difficulty (Play options, saved on the device)
 - Auto, Light and Dark themes (Auto follows the device)
-- Install app button in the header, shown only when the browser offers installation. It calls the browser's install prompt directly, because Chrome's menu can wrongly say "already installed" when several apps share one github.io origin
+- Pass-and-play with a friend on the same device; Undo takes back one move
+- Move history with Blush/Blueberry columns, standard chess notation and full move descriptions for assistive technology
+- Keyboard navigation: one Tab stop on the board, arrow keys to move, Enter/Space to play, Escape to clear selection
+- Install app button in Play options, shown only when the browser offers installation. It calls the browser's install prompt directly, because Chrome's menu can wrongly say "already installed" when several apps share one github.io origin
 
 ## Getting started
 
@@ -61,7 +64,7 @@ public/                   app icons (192, 512 and a padded maskable 512)
   - **Sleepy**: mostly random moves.
   - **Easy** (default): looks one move ahead, often misses things and sometimes plays a random move.
   - **Tricky**: looks two moves ahead (spots simple traps and mates in one), with a few random slips.
-- Difficulty is chosen under Settings and saved in `localStorage`. Changing it mid-game applies from the computer's next reply.
+- Difficulty is chosen under Play options and saved in `localStorage`. Changing it mid-game applies from the computer's next reply.
 - Tune difficulty via `CONFIG` in `src/ai.ts` (`noise` and `blunder` are the dials). Stockfish was ruled out as far too strong and a large precache asset.
 - Pieces are raster art (WebP, 256x256, bottom-aligned). To swap a piece, replace its file in `src/assets/pieces` keeping the name and size. Piece heights are deliberately compressed (pawn ~74% of king) so faces stay readable on small squares.
 - Game state is just the list of moves played. The position is rebuilt with chess.js on each change, which is cheap and makes undo trivial.
@@ -78,6 +81,6 @@ public/                   app icons (192, 512 and a padded maskable 512)
 
 MIT. See [LICENSE](LICENSE).
 
-Games save automatically on this device after moves, undo, and new-game actions. Restoring replays the move history so captures, castling, repetition, and undo remain correct. Invalid or unavailable storage falls back to a playable new game. The visible side picker chooses Blush or Blueberry; Settings contain difficulty, theme, and orientation; the promotion picker uses fluid columns with visible piece names.
+Games and the chosen computer/pass-and-play mode save automatically on this device after moves, undo, and new-game actions. Existing saves migrate to computer mode without losing moves. Restoring replays the move history so captures, castling, repetition, and undo remain correct. Invalid or unavailable storage falls back to a playable new game. Play options contain opponent, difficulty, side, theme, and installation; the promotion picker uses fluid columns with visible piece names.
 
-Auto layout responds to phone rotation without a tablet-width cutoff. On short landscape screens the board stays visible while the control column scrolls separately. The playful gradients, rounded panels, and tactile buttons are retained.
+Layout follows the window and responds to phone rotation without locking the screen or applying legacy orientation preferences. On short landscape screens the board stays visible while the control column scrolls separately. The playful gradients, rounded panels, and tactile buttons are retained.
