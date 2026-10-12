@@ -29,5 +29,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
+      - run: pnpm test
       # build runs the typecheck (tsc -b) before vite build
       - run: pnpm build

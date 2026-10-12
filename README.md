@@ -25,6 +25,7 @@ pnpm build      # typecheck + production build
 pnpm preview    # serve the production build
 pnpm typecheck
 pnpm lint
+pnpm test       # saved-game regression checks
 ```
 
 The service worker only runs in production builds. To test install and offline behaviour, use `pnpm build && pnpm preview`.
@@ -67,7 +68,7 @@ public/                   app icons (192, 512 and a padded maskable 512)
 
 ## Roadmap
 
-- [ ] Persist the game in `localStorage`
+- [x] Persist the game and chosen side in `localStorage`
 - [ ] Sounds and haptics
 - [ ] Move animations between squares
 - [ ] Alternative themes and character skins
@@ -76,3 +77,5 @@ public/                   app icons (192, 512 and a padded maskable 512)
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
+
+Games save automatically on this device after moves, undo, and new-game actions. Restoring replays the move history so captures, castling, repetition, and undo remain correct. Invalid or unavailable storage falls back to a playable new game. Settings contain the side picker, difficulty, theme, and orientation; the promotion picker uses fluid columns with visible piece names.

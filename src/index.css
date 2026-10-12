@@ -93,11 +93,11 @@ html {
 
 body {
   margin: 0;
-  background: radial-gradient(circle at 20% 10%, var(--page-1) 0%, var(--page-2) 60%, var(--page-3) 100%);
+  background: var(--page-2);
   background-attachment: fixed;
   color: var(--color-ink);
   font-family: var(--font-body);
-  font-weight: 600;
+  font-weight: 400;
   overscroll-behavior: none;
   touch-action: manipulation;
   user-select: none;
@@ -105,19 +105,19 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Chunky candy buttons: a solid bottom edge that squashes on press */
+/* A small tactile edge keeps controls playful without competing with the pieces. */
 .btn {
   --btn-edge: var(--color-lilac-edge);
-  min-height: 3.5rem;
+  min-height: 3rem;
   padding: 0 1rem;
-  border-radius: 1.25rem;
+  border-radius: 0.875rem;
   background: var(--color-lilac);
   color: var(--color-ink);
-  font-family: var(--font-display);
-  font-size: 1.1875rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
   font-weight: 600;
   line-height: 1.15;
-  box-shadow: 0 5px 0 var(--btn-edge);
+  box-shadow: 0 2px 0 var(--btn-edge);
   transition: transform 80ms ease-out, box-shadow 80ms ease-out;
 }
 .btn-primary {
@@ -126,8 +126,8 @@ body {
   color: var(--color-on-berry);
 }
 .btn:active:not(:disabled) {
-  transform: translateY(3px);
-  box-shadow: 0 2px 0 var(--btn-edge);
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--btn-edge);
 }
 .btn:disabled { opacity: 0.4; }
 .btn:focus-visible { outline: 4px solid var(--color-ink); outline-offset: 3px; }
@@ -185,3 +185,70 @@ body {
   .confetti-layer { display: none; }
   .win-card, .win-bounce, .piece-win { animation: none; }
 }
+
+/* Game layout: one clear playfield, a compact toolbar, and settings when needed. */
+.game-shell { width: 100%; max-width: 1120px; min-height: 100%; margin: auto; padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); }
+.game-topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: min(100%, 65dvh); margin: 0 auto 16px; }
+.game-brand { display: flex; align-items: center; gap: 8px; }
+.game-brand h1 { margin: 0; font-family: var(--font-display); font-size: 1.5rem; font-weight: 500; letter-spacing: -.025em; line-height: 1.15; }
+.btn-small { min-height: 44px; padding: 0 12px; font-size: .8125rem; white-space: nowrap; }
+.game-content { display: grid; grid-template-columns: minmax(0, 1fr); width: min(100%, 65dvh); margin: auto; gap: 14px; }
+.board-column { order: 1; min-width: 0; }
+.board-frame { position: relative; width: 100%; aspect-ratio: 1; padding: 1.6%; border-radius: 24px; background: var(--color-panel); box-shadow: 0 8px 24px -14px var(--board-shadow); }
+.board-grid { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; height: 100%; border-radius: 16px; overflow: hidden; }
+.board-square { min-width: 0; min-height: 0; }
+.board-square:focus-visible { outline: 3px solid var(--color-berry); outline-offset: -3px; z-index: 25; }
+.save-note { margin: 8px 0 0; font-size: .75rem; line-height: 1.4; text-align: center; color: var(--color-ink-soft); }
+.game-sidebar { display: contents; }
+.turn-status { order: 0; display: flex; align-items: center; gap: 10px; padding: 0 2px; }
+.turn-title { font-family: var(--font-display); font-size: 1.375rem; line-height: 1.2; font-weight: 500; }
+.turn-detail { margin-top: 3px; font-size: .8125rem; color: var(--color-ink-soft); font-variant-numeric: tabular-nums; }
+.game-actions { order: 2; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding-bottom: 2px; }
+.game-actions .btn { padding: 0 6px; font-size: .875rem; }
+.btn-quiet { background: transparent; color: var(--color-ink-soft); box-shadow: none; border: 1px solid color-mix(in srgb, var(--color-ink-soft) 25%, transparent); }
+.btn-quiet:active:not(:disabled) { box-shadow: none; }
+.captured-pieces { order: 3; padding: 12px 2px; border-top: 1px solid color-mix(in srgb, var(--color-ink-soft) 18%, transparent); }
+.capture-row + .capture-row { margin-top: 10px; }
+.capture-label { display: flex; justify-content: space-between; font-size: .75rem; color: var(--color-ink-soft); }
+.capture-label span { font-variant-numeric: tabular-nums; }
+.capture-tray { display: flex; flex-wrap: wrap; }
+.game-settings { order: 4; border-top: 1px solid color-mix(in srgb, var(--color-ink-soft) 18%, transparent); }
+.game-settings summary { display: flex; align-items: center; justify-content: space-between; min-height: 48px; font-weight: 600; font-size: .9375rem; cursor: pointer; list-style: none; }
+.game-settings summary::-webkit-details-marker { display: none; }
+.game-settings summary:focus-visible { outline: 3px solid var(--color-berry); outline-offset: 3px; }
+.settings-chevron { width: 8px; height: 8px; margin-right: 4px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); }
+.game-settings[open] .settings-chevron { transform: rotate(225deg); }
+.settings-content { display: flex; flex-direction: column; gap: 16px; padding: 4px 0 16px; }
+.setting-label { margin-bottom: 7px; font-size: .8125rem; font-weight: 500; color: var(--color-ink-soft); }
+.side-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.side-picker label { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 64px; border: 1px solid transparent; border-radius: 12px; padding: 6px; background: var(--color-panel); font-size: .875rem; font-weight: 600; cursor: pointer; }
+.side-picker small { display: block; font-size: .6875rem; font-weight: 400; color: var(--color-ink-soft); }
+.side-picker label:has(:checked) { background: var(--color-sel); border-color: var(--color-berry); }
+.segmented-control { display: grid; gap: 3px; padding: 3px; border-radius: 12px; background: var(--color-lilac); }
+.segment-option { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 3px; border-radius: 9px; font-size: .8125rem; font-weight: 500; cursor: pointer; }
+.segment-option:has(:checked) { background: var(--color-panel); color: var(--color-ink); box-shadow: 0 1px 3px #00000012; }
+.segment-option:has(:focus-visible), .side-picker label:has(:focus-visible) { outline: 3px solid var(--color-berry); outline-offset: 2px; }
+.promotion-overlay { position: absolute; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--color-panel) 85%, transparent); border-radius: 24px; backdrop-filter: blur(4px); }
+.promotion-dialog { width: calc(100% - 24px); max-width: 460px; padding: 12px; background: var(--color-panel); border-radius: 16px; box-shadow: 0 6px 24px #00000016; text-align: center; }
+.promotion-dialog > p { margin: 0 0 12px; font-family: var(--font-display); font-size: 1.125rem; font-weight: 500; }
+.promotion-choices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.promotion-choice { min-width: 0; min-height: 96px; padding: 8px 2px; border-radius: 10px; background: var(--color-lilac); }
+.promotion-choice img { display: block; width: 100%; height: 64px; }
+.promotion-choice span { display: block; margin-top: 4px; font-size: .75rem; text-transform: capitalize; }
+.promotion-choice:focus-visible { outline: 3px solid var(--color-berry); outline-offset: 2px; }
+@media (min-width: 850px) {
+  html[data-layout='landscape'] .game-topbar { width: 100%; }
+  html[data-layout='landscape'] .game-content { width: 100%; grid-template-columns: minmax(0, 1fr) 288px; gap: 28px; align-items: start; }
+  html[data-layout='landscape'] .board-column { order: 0; width: min(100%, calc(100dvh - 130px)); justify-self: center; }
+  html[data-layout='landscape'] .game-sidebar { display: flex; flex-direction: column; gap: 20px; padding-top: 4px; }
+  html[data-layout='landscape'] .turn-status { min-height: 64px; }
+}
+@media (max-width: 380px) {
+  .game-shell { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+  .game-brand h1 { font-size: 1.25rem; }
+  .game-brand { gap: 4px; }
+  .game-brand img { width: 32px; height: 32px; }
+  .game-actions .btn { font-size: .8125rem; }
+  .promotion-dialog { padding: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }

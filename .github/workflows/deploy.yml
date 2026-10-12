@@ -29,7 +29,16 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
+      - run: pnpm test
       - run: pnpm build
+      - name: Check game persistence and responsive UI
+        run: node scripts/ui-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-screenshots
+          path: ui-screenshots
+          if-no-files-found: ignore
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
