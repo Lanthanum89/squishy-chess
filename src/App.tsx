@@ -108,13 +108,13 @@ export default function App() {
   }
 
   return (
-    <main className="play-screen flex min-h-full flex-col items-center justify-center gap-4 p-4 wide:flex-row wide:items-start wide:gap-6">
-      <div className="play-board w-[min(100%,62dvh)] wide:w-[min(calc(100dvw-22rem),calc(100dvh-2rem))] wide:shrink-0">
+    <main className="play-screen flex h-dvh flex-col items-center gap-3 overflow-hidden p-4 wide:flex-row wide:items-start wide:justify-center wide:gap-6">
+      <div className="play-board w-[min(100%,calc(100dvh-14rem))] shrink-0 wide:w-[min(calc(100dvw-22rem),calc(100dvh-2rem))]">
         <Board game={game} flipped={flipped} locked={computerTurn} />
       </div>
 
-      <aside className="play-controls flex w-full max-w-sm flex-col gap-3 wide:w-72">
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+      <aside className="play-controls flex min-h-0 w-full max-w-xl flex-1 flex-col gap-2.5 wide:h-full wide:w-72 wide:max-w-none wide:flex-none">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-sel">
               <Piece type="k" color="w" className="h-9 w-9" />
@@ -125,7 +125,7 @@ export default function App() {
           </div>
 
         </div>
-        <div className="turn-status flex items-center gap-4 rounded-[1.75rem] bg-panel px-4 py-3" aria-live="polite" aria-atomic="true">
+        <div className="turn-status flex shrink-0 items-center gap-4 rounded-[1.75rem] bg-panel px-4 py-3" aria-live="polite" aria-atomic="true">
           <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-full bg-sel">
             <Piece
               type="k"
@@ -144,15 +144,15 @@ export default function App() {
           </div>
         </div>
 
-        <div className="game-actions grid grid-cols-2 gap-3">
+        <div className="game-actions grid shrink-0 grid-cols-3 gap-2.5">
           <Button onClick={undo} disabled={!canUndo}>Undo</Button>
           <Button onClick={() => setManualFlip((f) => !f)} aria-pressed={manualFlip}>
-            Flip board
+            Flip
           </Button>
-          <Button primary onClick={newGame} className="col-span-2">New game</Button>
+          <Button primary onClick={newGame}>New game</Button>
         </div>
 
-        {(game.captured.w.length > 0 || game.captured.b.length > 0) && <section className="capture-tray rounded-3xl bg-panel px-4 py-3" aria-label="Captured pieces">
+        {(game.captured.w.length > 0 || game.captured.b.length > 0) && <section className="capture-tray shrink-0 rounded-3xl bg-panel px-4 py-3" aria-label="Captured pieces">
           {(['w', 'b'] as const).map((side) => (
             <div key={side}>
               <div className="text-sm font-extrabold text-ink-soft">{NAMES[side]} squished</div>
@@ -168,10 +168,10 @@ export default function App() {
           ))}
         </section>}
 
-        <details className="move-history rounded-3xl bg-panel px-4 py-3" open={game.history.length > 0}>
+        <details className="move-history relative min-h-14 shrink overflow-y-auto rounded-3xl bg-panel px-4 py-3" open={game.history.length > 0}>
           <summary className="cursor-pointer font-display text-lg font-semibold">Move history</summary>
           {game.history.length === 0 ? <p className="mt-2 text-sm text-ink-soft">Your first move starts the story.</p> : (
-            <div className="history-scroll mt-2 max-h-40 overflow-y-auto" tabIndex={0} aria-label="Scrollable move history">
+            <div className="history-scroll mt-2" tabIndex={0} aria-label="Scrollable move history">
               <table className="w-full text-left text-sm">
                 <thead><tr><th scope="col">Move</th><th scope="col">Blush</th><th scope="col">Blueberry</th></tr></thead>
                 <tbody>{game.history.filter((_, i) => i % 2 === 0).map((move, i) => (
@@ -192,7 +192,7 @@ export default function App() {
 
 
         {/* Keep game setup together and out of the way during play. */}
-        <details className="game-settings group rounded-3xl bg-panel px-4 py-3">
+        <details className="game-settings group relative min-h-14 shrink overflow-y-auto rounded-3xl bg-panel px-4 py-3">
           <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between font-display text-lg font-semibold [&::-webkit-details-marker]:hidden">
             Play options
             <svg
@@ -207,7 +207,7 @@ export default function App() {
           </summary>
           <div className="mt-3 flex flex-col gap-3">
             <Segmented label="Play with" options={[{id:'computer',label:'Computer'},{id:'pass-play',label:'A friend'}]} value={game.mode} onChange={chooseMode} />
-            {passPlay ? <p className="text-sm text-ink-soft">Take turns on this device. Blush moves first. Use Flip board when you pass it over.</p> : (
+            {passPlay ? <p className="text-sm text-ink-soft">Take turns on this device. Blush moves first. Use Flip when you pass it over.</p> : (
               <>
                 <Segmented label="Computer difficulty" options={LEVELS} value={level} onChange={setLevel} />
 
