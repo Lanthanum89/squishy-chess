@@ -60,7 +60,7 @@ public/                   app icons (192, 512 and a padded maskable 512)
   - Changing side or starting a new game resets the board, and asks first if a game is in progress.
   - Undo takes back your last move and the computer's reply. As Blueberry, the computer's opening move cannot be undone.
 - Winning by checkmate triggers a celebration (confetti, a bouncing king and a Play again card). It respects `prefers-reduced-motion`, and replaying the same mate after an Undo celebrates again.
-- Flip board only turns the view round. It does not change who plays which colour.
+- Flip only turns the view round. It does not change who plays which colour.
 - The computer is a small material-counting engine on top of chess.js, deliberately weak. Levels in `src/ai.ts`:
   - **Sleepy**: mostly random moves.
   - **Easy** (default): looks one move ahead, often misses things and sometimes plays a random move.

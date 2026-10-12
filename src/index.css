@@ -109,7 +109,8 @@ body {
 .btn {
   --btn-edge: var(--color-lilac-edge);
   min-height: 3.5rem;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
+  white-space: nowrap;
   border-radius: 1.25rem;
   background: var(--color-lilac);
   color: var(--color-ink);
@@ -191,7 +192,9 @@ body {
 .play-screen { padding-top: max(16px, env(safe-area-inset-top)); padding-right: max(16px, env(safe-area-inset-right)); padding-bottom: max(16px, env(safe-area-inset-bottom)); padding-left: max(16px, env(safe-area-inset-left)); }
 .play-board { min-width: 0; }
 html[data-layout='landscape'] .play-board { flex-shrink: 1; }
-html[data-layout='landscape'] .play-controls { flex: 0 0 18rem; max-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom))); overflow-y: auto; padding: 4px 4px 8px; scrollbar-width: thin; }
+html[data-layout='landscape'] .play-controls { flex: 0 0 18rem; padding: 4px; }
+.move-history, .game-settings { scrollbar-width: thin; }
+.btn { min-height: clamp(2.75rem, 7dvh, 3.5rem); }
 .board-square { min-width: 0; min-height: 0; }
 .board-square:focus-visible { outline: 3px solid var(--color-berry); outline-offset: -3px; z-index: 25; }
 .promotion-overlay { position: absolute; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--color-panel) 85%, transparent); border-radius: 24px; backdrop-filter: blur(4px); }
@@ -213,3 +216,4 @@ html[data-layout='landscape'] .play-controls { flex: 0 0 18rem; max-height: calc
 @media (max-width: 480px) {
   .play-screen { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
 }
+.game-actions .btn { font-size: 1rem; padding: 0 0.25rem; }
