@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { Color, Move, PieceSymbol, Square } from 'chess.js'
 import Piece from './Piece'
 import type { useGame } from '../hooks/useGame'
@@ -42,6 +42,9 @@ export default function Board({
   const setUi = (patch: Partial<Omit<Ui, 'fen'>>) =>
     setStored({ fen: game.fen, selected, promo, ...patch })
 
+  const helpId = useId()
+  const [focusSquare, setFocusSquare] = useState<Square>(flipped ? 'h1' : 'a8')
+  const squareRefs = useRef(new Map<Square, HTMLButtonElement>())
   const triggerRef = useRef<HTMLElement | null>(null)
   const firstChoiceRef = useRef<HTMLButtonElement>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -59,6 +62,10 @@ export default function Board({
   const over = game.status.kind !== 'playing'
   const targets: Move[] = selected ? game.legalFrom(selected) : []
   const targetSquares = new Set(targets.map((m) => m.to))
+  const selectedPiece = selected ? game.board.flat().find((cell) => cell?.square === selected) : null
+  const selectionText = selectedPiece
+    ? `${SIDE_NAMES[selectedPiece.color]} ${PIECE_NAMES[selectedPiece.type]} selected. ${targetSquares.size ? `Legal destinations: ${[...targetSquares].join(', ')}.` : 'No legal moves.'}`
+    : '' 
   const checkedKing = game.status.kind === 'playing' && game.status.check ? game.kingSquare(game.turn) : null
 
   const winningKing = game.status.kind === 'checkmate' ? game.kingSquare(game.status.winner) : null
@@ -66,6 +73,7 @@ export default function Board({
   const rows = flipped ? [...game.board].reverse() : game.board
 
   function onSquare(sq: Square, pieceColor: Color | undefined, el: HTMLElement) {
+    setFocusSquare(sq)
     if (over || locked || promo) return
     if (selected && targetSquares.has(sq)) {
       const move = targets.find((m) => m.to === sq)!
@@ -83,6 +91,31 @@ export default function Board({
   function choosePromotion(p: PieceSymbol) {
     if (!promo) return
     game.play({ ...promo, promotion: p })
+  }
+
+  function onSquareKeyDown(e: React.KeyboardEvent, sq: Square) {
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      setUi({ selected: null })
+      return
+    }
+    const file = FILES.indexOf(sq[0])
+    const rank = Number(sq[1])
+    let row = flipped ? rank - 1 : 8 - rank
+    let column = flipped ? 7 - file : file
+    switch (e.key) {
+      case 'ArrowLeft': column = Math.max(0, column - 1); break
+      case 'ArrowRight': column = Math.min(7, column + 1); break
+      case 'ArrowUp': row = Math.max(0, row - 1); break
+      case 'ArrowDown': row = Math.min(7, row + 1); break
+      case 'Home': column = 0; if (e.ctrlKey) row = 0; break
+      case 'End': column = 7; if (e.ctrlKey) row = 7; break
+      default: return
+    }
+    e.preventDefault()
+    const next = `${FILES[flipped ? 7 - column : column]}${flipped ? row + 1 : 8 - row}` as Square
+    setFocusSquare(next)
+    squareRefs.current.get(next)?.focus()
   }
 
   function onDialogKeyDown(e: React.KeyboardEvent) {
@@ -105,10 +138,15 @@ export default function Board({
   }
 
   return (
-    <div className="board-frame">
+    <div className="board-frame relative aspect-square w-full rounded-[2.2rem] bg-panel p-[1%] shadow-[0_18px_50px_-14px_var(--board-shadow)]">
+      <p id={helpId} className="sr-only">Use arrow keys to move between squares. Enter or Space selects a piece or plays a legal move. Escape clears selection. Home and End move to the row edges. Tab leaves the board.</p>
+      <p className="sr-only" aria-live="polite" aria-atomic="true">{selectionText}</p>
       <div
+        role="group"
+        aria-label="Chessboard"
+        aria-describedby={helpId}
         inert={promoOpen}
-        className="board-grid"
+        className="board-grid grid h-full w-full grid-cols-8 grid-rows-8 overflow-hidden rounded-[1.6rem]"
       >
         {rows.flatMap((row, r) => {
           const cells = flipped ? [...row].reverse() : row
@@ -127,17 +165,24 @@ export default function Board({
               <button
                 key={sq}
                 type="button"
-                aria-label={label}
+                aria-label={`${label}${selected === sq ? ', selected' : ''}${isTarget ? (cell ? ', legal capture' : ', legal move') : ''}${checkedKing === sq ? ', in check' : ''}`}
+                aria-pressed={selected === sq}
+                title={cell ? `${SIDE_NAMES[cell.color]} ${PIECE_NAMES[cell.type]}` : undefined}
+                data-square={sq}
+                tabIndex={focusSquare === sq ? 0 : -1}
+                ref={(node) => { if (node) squareRefs.current.set(sq, node); else squareRefs.current.delete(sq) }}
+                onFocus={() => setFocusSquare(sq)}
+                onKeyDown={(e) => onSquareKeyDown(e, sq)}
                 onClick={(e) => onSquare(sq, cell?.color, e.currentTarget)}
                 className={`board-square relative flex items-center justify-center p-0 ${dark ? 'bg-square-dark' : 'bg-square-light'}`}
               >
                 {c === 0 && (
-                  <span aria-hidden="true" className={`pointer-events-none absolute left-[7%] ${r === 0 ? 'top-[16%]' : 'top-[5%]'} z-20 text-[0.625rem] font-semibold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
+                  <span aria-hidden="true" className={`pointer-events-none absolute left-[7%] ${r === 0 ? 'top-[16%]' : 'top-[5%]'} z-20 text-xs font-extrabold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
                     {rank}
                   </span>
                 )}
                 {r === 7 && (
-                  <span aria-hidden="true" className={`pointer-events-none absolute bottom-[5%] ${c === 7 ? 'right-[16%]' : 'right-[7%]'} z-20 text-[0.625rem] font-semibold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
+                  <span aria-hidden="true" className={`pointer-events-none absolute bottom-[5%] ${c === 7 ? 'right-[16%]' : 'right-[7%]'} z-20 text-xs font-extrabold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
                     {FILES[file]}
                   </span>
                 )}

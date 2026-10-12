@@ -1,10 +1,11 @@
 import { Chess, type Color, type PieceSymbol, type Square } from 'chess.js'
 
 export type MoveInput = { from: Square; to: Square; promotion?: PieceSymbol }
-export type SavedGame = { version: 1; player: Color; moves: MoveInput[] }
+export type GameMode = 'computer' | 'pass-play'
+export type SavedGame = { version: 1; player: Color; mode: GameMode; moves: MoveInput[] }
 export const GAME_KEY = 'squishy-game-v1'
 
-export const emptyGame = (): SavedGame => ({ version: 1, player: 'w', moves: [] })
+export const emptyGame = (): SavedGame => ({ version: 1, player: 'w', mode: 'computer', moves: [] })
 
 // Replay the entire history so captures, castling, repetition and undo survive a reload.
 // Treat storage as untrusted: an incomplete or invalid save must never break the board.
@@ -14,6 +15,7 @@ export function readSavedGame(storage: Pick<Storage, 'getItem'>): SavedGame {
     if (!raw) return emptyGame()
     const data = JSON.parse(raw)
     if (data?.version !== 1 || !['w', 'b'].includes(data.player) || !Array.isArray(data.moves) || data.moves.length > 2000) return emptyGame()
+    if (data.mode !== undefined && !['computer', 'pass-play'].includes(data.mode)) return emptyGame()
     const chess = new Chess()
     const moves: MoveInput[] = []
     for (const move of data.moves) {
@@ -25,7 +27,7 @@ export function readSavedGame(storage: Pick<Storage, 'getItem'>): SavedGame {
       chess.move(input)
       moves.push(input)
     }
-    return { version: 1, player: data.player, moves }
+    return { version: 1, player: data.player, mode: data.mode ?? 'computer', moves }
   } catch {
     return emptyGame()
   }

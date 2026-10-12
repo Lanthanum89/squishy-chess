@@ -6,7 +6,7 @@ import { join } from 'node:path'
 
 const profile = await mkdtemp(join(tmpdir(), 'squishy-chess-'))
 const server = spawn('pnpm', ['exec', 'vite', 'preview', '--host', '127.0.0.1', '--port', '4173', '--strictPort'], { stdio: 'inherit' })
-const chrome = spawn(process.env.CHROME_BIN || 'google-chrome', ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--remote-debugging-port=9222', `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore' })
+const chrome = spawn(process.env.CHROME_BIN || 'google-chrome', ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--remote-debugging-port=9222', `--user-data-dir=${profile}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'inherit'] })
 let socket
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 async function available(url, options) {
@@ -54,7 +54,7 @@ try {
     for (let i = 0; i < 100; i++) { if (await evaluate(expression)) return; await pause(50) }
     throw new Error(`Condition failed: ${expression}`)
   }
-  const clickSquare = (label) => evaluate(`document.querySelector('.board-square[aria-label="${label}"]').click()`)
+  const clickSquare = (label) => evaluate(`document.querySelector('.board-square[data-square="${label.slice(0,2)}"]').click()`)
   await call('Page.enable')
   await call('Runtime.enable')
   await call('Page.navigate', { url: 'http://127.0.0.1:4173' })
@@ -72,6 +72,7 @@ try {
   await clickSquare('e2, Blush pawn')
   await clickSquare('e4, empty')
   await waitFor("JSON.parse(localStorage.getItem('squishy-game-v1')).moves.length === 2")
+  assert.match(await evaluate("document.querySelector('.turn-status').textContent"), /Last move: Blueberry/)
   const beforeReload = await evaluate("localStorage.getItem('squishy-game-v1')")
   await call('Page.reload')
   await waitFor("document.querySelectorAll('.board-square').length === 64 && !!document.querySelector('.board-square[aria-label=\"e4, Blush pawn\"]')")
@@ -91,24 +92,71 @@ try {
   await evaluate("document.querySelectorAll('input[name=play-as]')[0].click()")
   await waitFor("JSON.parse(localStorage.getItem('squishy-game-v1')).player === 'w' && JSON.parse(localStorage.getItem('squishy-game-v1')).moves.length === 0")
   assert(dialogCount >= 2, 'Changing sides must ask before replacing a game')
-  await evaluate("document.querySelector('.segmented-control label:last-child input').click()")
+  await evaluate("document.querySelector('.segmented-control input[value=tricky]').click()")
   assert.equal(await evaluate("localStorage.getItem('squishy-level')"), 'tricky')
   await evaluate("document.querySelectorAll('.game-actions button')[1].click()")
   assert.equal(await evaluate("document.querySelector('.board-square').getAttribute('aria-label')"), 'h1, Blush rook')
   await evaluate("document.querySelectorAll('.game-actions button')[1].click(); document.querySelector('.game-settings').open = false")
   await mkdir('ui-screenshots', { recursive: true })
   for (const [name, width, height] of [['phone', 390, 844], ['small-phone', 320, 640], ['tablet', 1024, 768], ['desktop', 1440, 1000]]) {
-    await call('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: width < 600 })
+    await call('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: width < 600, screenOrientation: { type: width > height ? 'landscapePrimary' : 'portraitPrimary', angle: width > height ? 90 : 0 } })
     await pause(150)
     assert(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), `${name}: horizontal overflow`)
     const screenshot = await call('Page.captureScreenshot', { format: 'png' })
     await writeFile(`ui-screenshots/${name}.png`, Buffer.from(screenshot.data, 'base64'))
   }
+  // Auto must actually use the side-by-side layout on phones, not just tablets.
+  for (const [name, width, height] of [['phone-landscape',844,390], ['small-phone-landscape',667,375]]) {
+    await call('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true, screenOrientation: { type: width > height ? 'landscapePrimary' : 'portraitPrimary', angle: width > height ? 90 : 0 } })
+    await waitFor("document.documentElement.dataset.layout === 'landscape'")
+    assert.equal(await evaluate("getComputedStyle(document.querySelector('.play-screen')).flexDirection"), 'row')
+    assert(await evaluate("(()=>{const board=document.querySelector('.play-board').getBoundingClientRect(), controls=document.querySelector('.play-controls').getBoundingClientRect(); return board.right <= controls.left && board.top < innerHeight && board.bottom <= innerHeight})()"), `${name}: board and controls must be side by side and board visible`)
+    assert(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), `${name}: horizontal overflow`)
+    const shot = await call('Page.captureScreenshot', { format:'png' })
+    await writeFile(`ui-screenshots/${name}.png`,Buffer.from(shot.data,'base64'))
+  }
+  // Old screen preferences must not force a portrait layout after an upgrade.
+  await evaluate("localStorage.setItem('squishy-orientation','portrait')")
+  await call('Page.reload')
+  await waitFor("document.documentElement.dataset.layout === 'landscape' && document.querySelectorAll('.board-square').length === 64")
+  assert.equal(await evaluate("getComputedStyle(document.querySelector('.play-screen')).flexDirection"), 'row')
+  // Pass-and-play: both sides are human, history and mode survive reload, Undo takes one ply.
+  await evaluate("document.querySelector('.game-settings').open=true; document.querySelector('input[value=pass-play]').click()")
+  await waitFor("JSON.parse(localStorage.getItem('squishy-game-v1')).mode === 'pass-play'")
+  await clickSquare('e2')
+  assert.equal(await evaluate("document.querySelector('[data-square=e2]').getAttribute('aria-pressed')"), 'true')
+  assert.match(await evaluate("document.querySelector('[data-square=e4]').getAttribute('aria-label')"), /legal move/)
+  assert.equal(await evaluate("document.querySelectorAll('.board-square[tabindex=\"0\"]').length"), 1)
+  await evaluate("document.querySelector('[data-square=e2]').focus()")
+  await call('Input.dispatchKeyEvent', {type:'keyDown',key:'ArrowRight',code:'ArrowRight'})
+  await call('Input.dispatchKeyEvent', {type:'keyUp',key:'ArrowRight',code:'ArrowRight'})
+  assert.equal(await evaluate("document.activeElement.dataset.square"), 'f2')
+  await clickSquare('e4')
+  await pause(1000)
+  assert.equal(await evaluate("JSON.parse(localStorage.getItem('squishy-game-v1')).moves.length"), 1)
+  assert.equal(await evaluate("document.querySelector('.turn-title').textContent"), 'Blueberry’s move')
+  await clickSquare('e7')
+  await clickSquare('e5')
+  await waitFor("document.querySelector('.move-history tbody')?.textContent.includes('e5')")
+  assert.match(await evaluate("document.querySelector('.turn-status').textContent"), /Blueberry pawn from e7 to e5/)
+  await call('Page.reload')
+  await waitFor("document.querySelector('.move-history tbody')?.textContent.includes('e5')")
+  assert.equal(await evaluate("JSON.parse(localStorage.getItem('squishy-game-v1')).mode"), 'pass-play')
+  await evaluate("document.querySelector('.game-actions button').click()")
+  await waitFor("JSON.parse(localStorage.getItem('squishy-game-v1')).moves.length === 1")
+  assert.equal(await evaluate("document.querySelector('.move-history tbody').textContent.includes('e5')"), false)
+  // Canceling New game keeps both the position and history; accepting clears both.
+  acceptDialog = false
+  await evaluate("document.querySelector('.game-actions button:last-child').click()")
+  assert.equal(await evaluate("JSON.parse(localStorage.getItem('squishy-game-v1')).moves.length"), 1)
+  acceptDialog = true
+  await evaluate("document.querySelector('.game-actions button:last-child').click()")
+  await waitFor("JSON.parse(localStorage.getItem('squishy-game-v1')).moves.length === 0")
   // Reach a legal promotion position and check that the picker stays inside a small phone board.
   const moves = [ ['a2','a4'], ['h7','h5'], ['a4','a5'], ['h5','h4'], ['a5','a6'], ['h4','h3'], ['a6','b7'], ['h3','g2'] ].map(([from,to]) => ({from,to}))
   const promotionSave = JSON.stringify({version:1,player:'w',moves})
   await evaluate(`localStorage.setItem('squishy-game-v1', ${JSON.stringify(promotionSave)}); localStorage.setItem('squishy-theme','dark')`)
-  await call('Emulation.setDeviceMetricsOverride', { width: 320, height: 640, deviceScaleFactor: 1, mobile: true })
+  await call('Emulation.setDeviceMetricsOverride', { width: 320, height: 640, deviceScaleFactor: 1, mobile: true, screenOrientation: { type: 'portraitPrimary', angle: 0 } })
   await call('Page.reload')
   await waitFor("!!document.querySelector('.board-square[aria-label=\"b7, Blush pawn\"]')")
   await clickSquare('b7, Blush pawn')
@@ -121,7 +169,7 @@ try {
   await evaluate("document.querySelector('.promotion-choice:last-child').click()")
   await waitFor("JSON.parse(localStorage.getItem('squishy-game-v1')).moves.some(move=>move.promotion==='n')")
   assert.equal(errors.length, 0, JSON.stringify(errors))
-  console.log('UI checks passed: moves, saved-game reload, undo, both sides, confirmation, difficulty, flip, four viewport sizes, and small-phone promotion in dark mode.')
+  console.log('UI checks passed: moves, saved-game reload, undo, both sides, confirmation, difficulty, flip, portrait and landscape phones, legacy orientation migration, keyboard navigation, accessible selection, pass-and-play, move history, and small-phone promotion in dark mode.')
 } finally {
   socket?.close()
   chrome.kill()
