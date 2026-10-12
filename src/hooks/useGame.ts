@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Chess, type Color, type Move, type PieceSymbol, type Square } from 'chess.js'
-import { emptyGame, readSavedGame, writeSavedGame, type MoveInput } from '../gameSave'
+import { emptyGame, readSavedGame, writeSavedGame, type GameMode, type MoveInput } from '../gameSave'
 
 export type Status =
   | { kind: 'playing'; turn: Color; check: boolean }
@@ -12,7 +12,7 @@ export function useGame() {
     try { return readSavedGame(localStorage) } catch { return emptyGame() }
   })
   const [saveAvailable, setSaveAvailable] = useState(true)
-  const { moves, player } = saved
+  const { moves, player, mode } = saved
 
   useEffect(() => {
     try { setSaveAvailable(writeSavedGame(localStorage, saved)) } catch { setSaveAvailable(false) }
@@ -52,6 +52,8 @@ export function useGame() {
 
   return {
     player,
+    mode,
+    history,
     saveAvailable,
     board: chess.board(),
     fen: chess.fen(),
@@ -64,6 +66,6 @@ export function useGame() {
     kingSquare,
     play: (m: MoveInput) => setSaved((prev) => ({ ...prev, moves: [...prev.moves, m] })),
     undo: (count = 1) => setSaved((prev) => ({ ...prev, moves: prev.moves.slice(0, Math.max(0, prev.moves.length - count)) })),
-    reset: (side: Color = player) => setSaved({ version: 1, player: side, moves: [] }),
+    reset: (side: Color = player, nextMode: GameMode = mode) => setSaved({ version: 1, player: side, mode: nextMode, moves: [] }),
   }
 }

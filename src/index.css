@@ -69,7 +69,7 @@
   --color-ink: #f8edf5;
   --color-ink-soft: #cdb9d6;
   --color-panel: #2f2448;
-  --color-square-light: #6f5f9c;
+  --color-square-light: #8070b0;
   --color-square-dark: #4a3d78;
   --color-coord-light: #f3eaff;
   --color-coord-dark: #d8c8ff;
@@ -209,3 +209,7 @@ html[data-layout='landscape'] .play-controls { flex: 0 0 18rem; max-height: calc
 .promotion-choice { border-radius: 1rem; box-shadow: 0 3px 0 var(--color-lilac-edge); }
 .promotion-choice span { font-weight: 600; }
 .promotion-choice:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--color-lilac-edge); }
+
+@media (max-width: 480px) {
+  .play-screen { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+}

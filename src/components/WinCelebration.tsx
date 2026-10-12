@@ -34,9 +34,11 @@ function Shape({ shape }: { shape: (typeof SHAPES)[number] }) {
 
 export default function WinCelebration({
   winner,
+  title = 'You win!',
   onPlayAgain,
   onClose,
 }: {
+  title?: string
   winner: Color
   onPlayAgain: () => void
   onClose: () => void
@@ -111,7 +113,7 @@ export default function WinCelebration({
         >
           <Piece type="k" color={winner} className="win-bounce h-36 w-36" />
           <h2 id="win-title" className="font-display text-4xl font-semibold leading-tight">
-            You win!
+            {title}
           </h2>
           <p className="text-lg font-bold text-ink-soft">Checkmate. Well played!</p>
           <div className="mt-2 grid w-full grid-cols-2 gap-3">
