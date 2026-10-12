@@ -15,7 +15,9 @@
         var dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.dataset.theme = dark ? 'dark' : 'light'
         if (dark) document.querySelector('meta[name="theme-color"]').content = '#1b1330'
-        var wide = matchMedia('(orientation: landscape)').matches
+        var screenMode = null
+        try { screenMode = localStorage.getItem('squishy-screen-mode') } catch (e) {}
+        var wide = screenMode !== 'portrait' && matchMedia('(orientation: landscape)').matches
         document.documentElement.dataset.layout = wide ? 'landscape' : 'portrait'
       })()
     </script>
