@@ -21,7 +21,7 @@ export default function Piece({
       src={src(color, type)}
       alt=""
       draggable={false}
-      className={`chess-piece object-contain object-bottom drop-shadow-[0_3px_2px_rgba(91,58,74,0.25)] ${className}`}
+      className={`object-contain object-bottom drop-shadow-[0_3px_2px_rgba(91,58,74,0.25)] ${className}`}
     />
   )
 }
