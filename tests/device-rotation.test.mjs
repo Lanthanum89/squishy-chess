@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { allowDeviceRotation, applyOrientation } from '../src/deviceRotation.ts'
+import { allowDeviceRotation, applyOrientation, requestOrientation } from '../src/deviceRotation.ts'
 
 test('overrides an older installed landscape default with any orientation', async () => {
   let orientation = 'landscape'
@@ -50,4 +50,41 @@ test('a rejected older Auto request cannot unlock a newer portrait choice', asyn
   rejectAuto(new Error('superseded'))
   assert.equal(await oldRequest, false)
   assert.equal(unlocks, 0)
+})
+
+test('a fullscreen-only browser retries an explicit lock after entering fullscreen', async () => {
+  let fullscreen = false
+  const calls = []
+  const result = await requestOrientation({ async lock(mode) {
+    calls.push(mode)
+    if (!fullscreen) throw new DOMException('Fullscreen required', 'SecurityError')
+  } }, 'portrait', () => true, { active: () => fullscreen, async enter() { fullscreen = true } })
+  assert.deepEqual(calls, ['portrait', 'portrait'])
+  assert.deepEqual(result, {allowed:true,enteredFullscreen:true})
+})
+
+test('fullscreen and lock errors are preserved without throwing', async () => {
+  const result = await requestOrientation({ async lock() { throw new DOMException('Fullscreen required', 'SecurityError') } }, 'landscape', () => true, {
+    active: () => false,
+    async enter() { throw new DOMException('User activation required', 'NotAllowedError') },
+  })
+  assert.equal(result.allowed, false)
+  assert.match(result.error, /SecurityError: Fullscreen required/)
+  assert.match(result.error, /NotAllowedError: User activation required/)
+})
+
+test('Auto and superseded explicit requests never enter fullscreen', async () => {
+  let enters = 0
+  const controller = { async lock() { throw new Error('not supported') } }
+  const fullscreen = { active: () => false, async enter() { enters++ } }
+  await requestOrientation(controller, 'auto', () => true, fullscreen)
+  await requestOrientation(controller, 'portrait', () => false, fullscreen)
+  assert.equal(enters, 0)
+})
+
+test('a failed fullscreen retry identifies that fullscreen was entered for cleanup', async () => {
+  const result = await requestOrientation({ async lock() { throw new Error('unsupported device') } }, 'portrait', () => true, {active: () => false, async enter() {}})
+  assert.equal(result.allowed, false)
+  assert.equal(result.enteredFullscreen, true)
+  assert.match(result.error, /unsupported device/)
 })
