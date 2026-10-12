@@ -32,3 +32,11 @@ jobs:
       - run: pnpm test
       # build runs the typecheck (tsc -b) before vite build
       - run: pnpm build
+      - name: Check gameplay and phone layouts
+        run: node scripts/ui-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-screenshots
+          path: ui-screenshots
+          if-no-files-found: ignore

@@ -105,10 +105,10 @@ export default function Board({
   }
 
   return (
-    <div className="board-frame">
+    <div className="board-frame relative aspect-square w-full rounded-[2.2rem] bg-panel p-[1.6%] shadow-[0_18px_50px_-14px_var(--board-shadow)]">
       <div
         inert={promoOpen}
-        className="board-grid"
+        className="board-grid grid h-full w-full grid-cols-8 grid-rows-8 overflow-hidden rounded-[1.6rem]"
       >
         {rows.flatMap((row, r) => {
           const cells = flipped ? [...row].reverse() : row
@@ -132,12 +132,12 @@ export default function Board({
                 className={`board-square relative flex items-center justify-center p-0 ${dark ? 'bg-square-dark' : 'bg-square-light'}`}
               >
                 {c === 0 && (
-                  <span aria-hidden="true" className={`pointer-events-none absolute left-[7%] ${r === 0 ? 'top-[16%]' : 'top-[5%]'} z-20 text-[0.625rem] font-semibold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
+                  <span aria-hidden="true" className={`pointer-events-none absolute left-[7%] ${r === 0 ? 'top-[16%]' : 'top-[5%]'} z-20 text-xs font-extrabold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
                     {rank}
                   </span>
                 )}
                 {r === 7 && (
-                  <span aria-hidden="true" className={`pointer-events-none absolute bottom-[5%] ${c === 7 ? 'right-[16%]' : 'right-[7%]'} z-20 text-[0.625rem] font-semibold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
+                  <span aria-hidden="true" className={`pointer-events-none absolute bottom-[5%] ${c === 7 ? 'right-[16%]' : 'right-[7%]'} z-20 text-xs font-extrabold leading-none ${dark ? 'text-coord-dark' : 'text-coord-light'}`}>
                     {FILES[file]}
                   </span>
                 )}

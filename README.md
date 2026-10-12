@@ -78,4 +78,6 @@ public/                   app icons (192, 512 and a padded maskable 512)
 
 MIT. See [LICENSE](LICENSE).
 
-Games save automatically on this device after moves, undo, and new-game actions. Restoring replays the move history so captures, castling, repetition, and undo remain correct. Invalid or unavailable storage falls back to a playable new game. Settings contain the side picker, difficulty, theme, and orientation; the promotion picker uses fluid columns with visible piece names.
+Games save automatically on this device after moves, undo, and new-game actions. Restoring replays the move history so captures, castling, repetition, and undo remain correct. Invalid or unavailable storage falls back to a playable new game. The visible side picker chooses Blush or Blueberry; Settings contain difficulty, theme, and orientation; the promotion picker uses fluid columns with visible piece names.
+
+Auto layout responds to phone rotation without a tablet-width cutoff. On short landscape screens the board stays visible while the control column scrolls separately. The playful gradients, rounded panels, and tactile buttons are retained.

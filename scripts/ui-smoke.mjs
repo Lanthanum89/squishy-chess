@@ -104,6 +104,22 @@ try {
     const screenshot = await call('Page.captureScreenshot', { format: 'png' })
     await writeFile(`ui-screenshots/${name}.png`, Buffer.from(screenshot.data, 'base64'))
   }
+  // Auto must actually use the side-by-side layout on phones, not just tablets.
+  for (const [name, width, height] of [['phone-landscape',844,390], ['small-phone-landscape',667,375]]) {
+    await call('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true })
+    await waitFor("document.documentElement.dataset.layout === 'landscape'")
+    assert.equal(await evaluate("getComputedStyle(document.querySelector('.play-screen')).flexDirection"), 'row')
+    assert(await evaluate("(()=>{const board=document.querySelector('.play-board').getBoundingClientRect(), controls=document.querySelector('.play-controls').getBoundingClientRect(); return board.right <= controls.left && board.top < innerHeight && board.bottom <= innerHeight})()"), `${name}: board and controls must be side by side and board visible`)
+    assert(await evaluate('document.documentElement.scrollWidth <= window.innerWidth'), `${name}: horizontal overflow`)
+    const shot = await call('Page.captureScreenshot', { format:'png' })
+    await writeFile(`ui-screenshots/${name}.png`,Buffer.from(shot.data,'base64'))
+  }
+  // A deliberate Portrait selection still stacks the game on a landscape viewport.
+  await evaluate("document.querySelector('.game-settings').open=true; document.querySelector('.segmented-control input[value=portrait]').click()")
+  await waitFor("document.documentElement.dataset.layout === 'portrait'")
+  assert.equal(await evaluate("getComputedStyle(document.querySelector('.play-screen')).flexDirection"), 'column')
+  await evaluate("document.querySelector('.segmented-control input[value=auto]').click(); document.querySelector('.game-settings').open=false")
+  await waitFor("document.documentElement.dataset.layout === 'landscape'")
   // Reach a legal promotion position and check that the picker stays inside a small phone board.
   const moves = [ ['a2','a4'], ['h7','h5'], ['a4','a5'], ['h5','h4'], ['a5','a6'], ['h4','h3'], ['a6','b7'], ['h3','g2'] ].map(([from,to]) => ({from,to}))
   const promotionSave = JSON.stringify({version:1,player:'w',moves})
@@ -121,7 +137,7 @@ try {
   await evaluate("document.querySelector('.promotion-choice:last-child').click()")
   await waitFor("JSON.parse(localStorage.getItem('squishy-game-v1')).moves.some(move=>move.promotion==='n')")
   assert.equal(errors.length, 0, JSON.stringify(errors))
-  console.log('UI checks passed: moves, saved-game reload, undo, both sides, confirmation, difficulty, flip, four viewport sizes, and small-phone promotion in dark mode.')
+  console.log('UI checks passed: moves, saved-game reload, undo, both sides, confirmation, difficulty, flip, portrait and landscape phones, explicit Portrait override, and small-phone promotion in dark mode.')
 } finally {
   socket?.close()
   chrome.kill()
