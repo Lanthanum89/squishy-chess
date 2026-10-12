@@ -18,7 +18,7 @@ export default defineConfig({
         theme_color: '#ffd6e8',
         background_color: '#fff4f8',
         display: 'standalone',
-        orientation: 'landscape',
+        orientation: 'any',
         // Keep this identity stable: changing it can create a separate installed app.
         // Relative ids resolve against the start_url origin, not the manifest directory.
         id: 'squishy-chess',

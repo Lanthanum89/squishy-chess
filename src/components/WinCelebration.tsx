@@ -102,7 +102,7 @@ export default function WinCelebration({
         ))}
       </div>
 
-      <div className="absolute inset-0 flex items-center justify-center bg-white/40 p-4">
+      <div className="absolute inset-0 flex items-center justify-center bg-panel/40 p-4">
         <div
           role="dialog"
           aria-modal="true"

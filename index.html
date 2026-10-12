@@ -7,6 +7,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <link rel="icon" type="image/png" href="icon-192.png" />
     <link rel="apple-touch-icon" href="icon-192.png" />
+    <script>
+      // Resolve the saved theme before first paint so dark mode does not flash light
+      ;(function () {
+        var t = null
+        try { t = localStorage.getItem('squishy-theme') } catch (e) {}
+        var dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+        if (dark) document.querySelector('meta[name="theme-color"]').content = '#241a3a'
+      })()
+    </script>
     <title>Squishy Chess</title>
   </head>
   <body>

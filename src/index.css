@@ -20,7 +20,36 @@
   --color-lilac-deep: #c9b3ff;
   --color-mint: #cff5e4;
   --color-ink: #5b3a4a;
+  --color-panel: #ffffff;
+  --color-square-light: #fff4f8;
+  --color-square-dark: #d5c5fb;
+  --color-lastmove: #fef08a;
   --font-display: 'Baloo 2 Variable', ui-rounded, 'Trebuchet MS', system-ui, sans-serif;
+}
+
+:root {
+  --page-1: #ffe9f3;
+  --page-2: #f3e8ff;
+  --page-3: #e3f7ef;
+}
+
+/* Dark theme: the same tokens, redefined. useTheme sets data-theme on <html>. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-cream: #2d2243;
+  --color-blush: #6b3f63;
+  --color-blush-deep: #9c4a7c;
+  --color-lilac: #43386a;
+  --color-lilac-deep: #7a64b8;
+  --color-mint: #1f4a40;
+  --color-ink: #f6e9f1;
+  --color-panel: #3a2d52;
+  --color-square-light: #5d4d82;
+  --color-square-dark: #3d3160;
+  --color-lastmove: #d9b84a;
+  --page-1: #2a1d45;
+  --page-2: #1d1530;
+  --page-3: #142628;
 }
 
 html,
@@ -29,9 +58,13 @@ body,
   height: 100%;
 }
 
+html {
+  background-color: var(--page-2);
+}
+
 body {
   margin: 0;
-  background: radial-gradient(circle at 20% 10%, #ffe9f3 0%, #f3e8ff 60%, #e3f7ef 100%);
+  background: radial-gradient(circle at 20% 10%, var(--page-1) 0%, var(--page-2) 60%, var(--page-3) 100%);
   background-attachment: fixed;
   color: var(--color-ink);
   font-family: var(--font-display);
