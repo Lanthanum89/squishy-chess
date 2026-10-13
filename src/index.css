@@ -197,6 +197,10 @@ html[data-layout='landscape'] .play-controls { flex: 0 0 18rem; padding: 4px; }
 .game-settings[open] { position: fixed; inset: 0; z-index: 40; overflow-y: auto; border-radius: 0; border: 0; padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
 .game-settings[open] > summary, .game-settings[open] > div { width: 100%; max-width: 36rem; margin-inline: auto; }
 .game-settings[open] > summary { position: sticky; top: calc(-1 * max(16px, env(safe-area-inset-top))); z-index: 1; padding-block: 8px; background: var(--color-panel); }
+/* Landscape/wide: a centred card over a dimmed, blurred board. Backdrop click or Escape closes it. */
+html[data-layout='landscape'] .game-settings[open] { display: grid; grid-template-columns: min(36rem, calc(100vw - 2rem)); align-content: center; justify-content: center; padding: 0; overflow: hidden; background: color-mix(in srgb, var(--color-ink) 30%, transparent); backdrop-filter: blur(8px); }
+html[data-layout='landscape'] .game-settings[open] > summary { position: static; max-width: none; margin: 0; padding: 16px 20px 4px; border-radius: 1.75rem 1.75rem 0 0; }
+html[data-layout='landscape'] .game-settings[open] > div { max-width: none; margin: 0; padding: 8px 20px 20px; max-height: calc(100dvh - 6rem); overflow-y: auto; border-radius: 0 0 1.75rem 1.75rem; background: var(--color-panel); }
 .btn { min-height: clamp(2.75rem, 7dvh, 3.5rem); }
 .board-square { min-width: 0; min-height: 0; }
 .board-square:focus-visible { outline: 3px solid var(--color-berry); outline-offset: -3px; z-index: 25; }
