@@ -178,6 +178,9 @@ try {
   // Pass-and-play: both sides are human, history and mode survive reload, Undo takes one ply.
   await evaluate("document.querySelector('.game-settings').open=true; document.querySelector('input[value=pass-play]').click()")
   await waitFor("JSON.parse(localStorage.getItem('squishy-game-v1')).mode === 'pass-play'")
+  // The open settings panel is modal (board inert); close it as a player would before using the board.
+  await evaluate("document.querySelector('.game-settings').open=false")
+  await waitFor("!document.querySelector('[inert]')")
   await clickSquare('e2')
   assert.equal(await evaluate("document.querySelector('[data-square=e2]').getAttribute('aria-pressed')"), 'true')
   assert.match(await evaluate("document.querySelector('[data-square=e4]').getAttribute('aria-label')"), /legal move/)

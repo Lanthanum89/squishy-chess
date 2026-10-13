@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { describeMove } from './moveAnnouncement'
 import type { GameMode } from './gameSave'
 import type { Color } from 'chess.js'
@@ -107,6 +107,28 @@ export default function App() {
     game.reset('w', mode)
   }
 
+  const settingsRef = useRef<HTMLDetailsElement>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const closeSettings = () => {
+    const details = settingsRef.current
+    if (!details) return
+    details.open = false
+    details.querySelector('summary')?.focus()
+  }
+
+  // The open settings panel is modal: make everything behind it inert, and close on Escape from anywhere.
+  useEffect(() => {
+    if (!settingsOpen) return
+    const behind = Array.from(document.querySelectorAll<HTMLElement>('.play-board, .play-controls > :not(.game-settings)'))
+    behind.forEach((el) => el.setAttribute('inert', ''))
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeSettings() }
+    document.addEventListener('keydown', onKey)
+    return () => {
+      behind.forEach((el) => el.removeAttribute('inert'))
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [settingsOpen])
+
   return (
     <main className="play-screen flex h-dvh flex-col items-center gap-3 overflow-hidden p-4 wide:flex-row wide:items-start wide:justify-center wide:gap-6">
       <div className="play-board w-[min(100%,calc(100dvh-14rem))] shrink-0 wide:w-[min(calc(100dvw-22rem),calc(100dvh-2rem))]">
@@ -192,7 +214,12 @@ export default function App() {
 
 
         {/* Keep game setup together and out of the way during play. */}
-        <details className="game-settings group relative min-h-14 shrink overflow-y-auto rounded-3xl bg-panel px-4 py-3">
+        <details
+          className="game-settings group relative min-h-14 shrink-0 rounded-3xl bg-panel px-4 py-3"
+          ref={settingsRef}
+          onToggle={(e) => setSettingsOpen(e.currentTarget.open)}
+          onClick={(e) => { if (e.target === e.currentTarget) closeSettings() }}
+        >
           <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between font-display text-lg font-semibold [&::-webkit-details-marker]:hidden">
             Play options
             <svg
