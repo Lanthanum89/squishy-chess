@@ -192,7 +192,7 @@ export default function App() {
 
 
         {/* Keep game setup together and out of the way during play. */}
-        <details className="game-settings group relative min-h-14 shrink overflow-y-auto rounded-3xl bg-panel px-4 py-3">
+        <details className="game-settings group relative min-h-14 shrink-0 rounded-3xl bg-panel px-4 py-3">
           <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between font-display text-lg font-semibold [&::-webkit-details-marker]:hidden">
             Play options
             <svg
